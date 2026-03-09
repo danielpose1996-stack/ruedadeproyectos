@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RuedaPro UNIPAZ - Plataforma Web</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body data-theme="light">
+    <!-- Main Application Shell -->
+    <div class="app-shell">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-container">
+                <div class="brand">
+                    <i class="fa-solid fa-gear brand-icon"></i>
+                    <span class="brand-text">RuedaPro <span class="text-unipaz">UNIPAZ</span></span>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <nav class="desktop-nav">
+                    <ul class="nav-links">
+                        <li><a href="#" data-route="home" class="active">Inicio</a></li>
+                        <li><a href="#" data-route="galeria">Galería</a></li>
+                        <li><a href="#" data-route="results">Resultados</a></li>
+                        
+                        <!-- Guest Auth Buttons -->
+                        <div id="auth-buttons" style="display: flex; gap: 1rem; align-items: center;">
+                            <li><a href="#" data-route="login-docente" class="btn btn-outline">Ingreso Docente</a></li>
+                            <li><a href="#" data-route="login-estudiante" class="btn btn-outline">Ingreso Estudiante</a></li>
+                        </div>
+                        
+                        <!-- Logged In User Menu -->
+                        <div id="user-menu" style="display: none; align-items: center; position: relative;">
+                            <div class="user-avatar-btn" id="user-avatar-btn" tabindex="0" style="cursor: pointer; width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary-color); overflow: hidden; display: flex; align-items: center; justify-content: center; background-color: var(--primary-light); color: var(--primary-color); font-weight: bold; font-size: 1.2rem; text-transform: uppercase;">
+                                <span id="header-avatar-initial"></span>
+                            </div>
+                            <!-- Dropdown Menu -->
+                            <div class="user-dropdown card" id="user-dropdown" style="display: none; position: absolute; top: 120%; right: 0; min-width: 220px; z-index: 1000; padding: 1rem; flex-direction: column; gap: 0.5rem;">
+                                <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.8rem; margin-bottom: 0.5rem;">
+                                    <strong id="header-user-name" style="color: var(--text-primary); display: block;">Usuario</strong>
+                                    <span id="header-user-role" class="badge" style="font-size: 0.75rem; margin-top: 0.3rem;">Rol</span>
+                                </div>
+                                <a href="#" id="header-btn-panel" class="btn btn-primary" style="text-align: center; width: 100%; padding: 0.6rem;">Ir a mi Panel</a>
+                                <a href="#" onclick="handleLogout(); return false;" class="btn btn-outline" style="text-align: center; width: 100%; padding: 0.6rem; color: var(--status-danger); border-color: var(--status-danger);">Cerrar Sesión</a>
+                            </div>
+                        </div>
+                    </ul>
+                    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle Dark Mode">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+                </nav>
+
+                <!-- Mobile Menu Button -->
+                <button class="mobile-menu-btn" id="mobile-menu-btn">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main id="app-content" class="app-content">
+            <!-- Dynamic views will be injected here by app.js -->
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-container">
+                <div class="footer-brand">
+                    <h3>RuedaPro UNIPAZ</h3>
+                    <p>Plataforma web para la gestión, evaluación y publicación de resultados de la Rueda de Proyectos de Ingeniería Informática de UNIPAZ.</p>
+                </div>
+                <div class="footer-links">
+                <h4>Enlaces Rápidos</h4>
+                <ul>
+                    <li><a href="#" data-route="home">Inicio</a></li>
+                    <li><a href="#" data-route="results">Resultados Anteriores</a></li>
+                    <li><a href="#" data-route="login-admin">Portal Administrativo</a></li>
+                </ul>
+            </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 UNIPAZ - Ingeniería Informática. Todos los derechos reservados.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modals Container -->
+    <div id="modals-container">    </div>
+    
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    
+    <!-- Application Logic Modules -->
+    <script src="js/config.js" defer></script>
+    <script src="js/auth.js" defer></script>
+    
+    <!-- Views -->
+    <script src="js/views/homeView.js" defer></script>
+    <script src="js/views/galeriaView.js" defer></script>
+    <script src="js/views/resultsView.js" defer></script>
+    <script src="js/views/authView.js" defer></script>
+    <script src="js/views/evaluacionView.js" defer></script>
+    <script src="js/views/docenteDashboardView.js" defer></script>
+    <script src="js/views/adminDashboardView.js" defer></script>
+    <script src="js/views/estudianteDashboardView.js" defer></script>
+    
+    <!-- Routing and Init -->
+    <script src="js/router.js" defer></script>
+    <script src="js/main.js" defer></script>
+</body>
+</html>
