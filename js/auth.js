@@ -16,10 +16,12 @@ async function restoreSession() {
                 rol: userMeta.rol || 'estudiante'
             };
             
-            // Try fetching avatar if relevant
-            const { data: pData } = await supabaseClient.from('perfiles').select('avatar_url').eq('id', currentProfile.id).single();
-            if (pData && pData.avatar_url) {
-                currentProfile.avatar_url = pData.avatar_url;
+            // Override with actual DB values to sync any manual RLS/Studio changes
+            const { data: pData } = await supabaseClient.from('perfiles').select('nombre, rol, avatar_url').eq('id', currentProfile.id).single();
+            if (pData) {
+                if (pData.nombre) currentProfile.nombre = pData.nombre;
+                if (pData.rol) currentProfile.rol = pData.rol;
+                if (pData.avatar_url) currentProfile.avatar_url = pData.avatar_url;
             }
         }
     } catch (e) {
@@ -71,10 +73,16 @@ async function handleLogin(event, role) {
         rol: userMeta.rol || 'estudiante'
     };
 
+    // Override with DB data to ensure role changes from Supabase Studio take effect immediately
+    const { data: pData } = await supabaseClient.from('perfiles').select('nombre, rol, avatar_url').eq('id', currentProfile.id).single();
+    if (pData) {
+        if (pData.nombre) currentProfile.nombre = pData.nombre;
+        if (pData.rol) currentProfile.rol = pData.rol;
+        if (pData.avatar_url) currentProfile.avatar_url = pData.avatar_url;
+    }
+
     // Route based on role, verifying the user's actual assigned role
     if (role === 'docente' && currentProfile.rol === 'docente') {
-        const { data: pData } = await supabaseClient.from('perfiles').select('avatar_url').eq('id', currentProfile.id).single();
-        if (pData && pData.avatar_url) currentProfile.avatar_url = pData.avatar_url;
         updateGlobalHeader();
         navigateTo('dashboard-docente');
     } else if (role === 'estudiante' && currentProfile.rol === 'estudiante') {
