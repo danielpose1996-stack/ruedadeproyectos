@@ -17,7 +17,7 @@ function renderEvaluacionView() {
                 </div>
                 <div class="timer-box">
                     <p>Tiempo Restante</p>
-                    <div class="time" id="eval-timer">15:00</div>
+                    <div class="time" id="eval-timer">24:00:00</div>
                 </div>
             </div>
 
@@ -186,9 +186,9 @@ async function initEvaluacionLogic(projectId) {
         }
     }
 
-    // 1. Timer Start (15:00)
+    // 1. Timer Start (24:00:00 = 1 día)
     clearInterval(evalTimerInterval);
-    let timeRemaining = 15 * 60; // 15 mins in seconds
+    let timeRemaining = 24 * 60 * 60; // 1 día en segundos
     const timerEl = document.getElementById('eval-timer');
     
     evalTimerInterval = setInterval(() => {
@@ -198,9 +198,10 @@ async function initEvaluacionLogic(projectId) {
             timerEl.style.color = "var(--status-danger)";
             return;
         }
-        let m = Math.floor(timeRemaining / 60);
+        let h = Math.floor(timeRemaining / 3600);
+        let m = Math.floor((timeRemaining % 3600) / 60);
         let s = timeRemaining % 60;
-        timerEl.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        timerEl.innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     }, 1000);
 
     // 2. Auto-calc Score
