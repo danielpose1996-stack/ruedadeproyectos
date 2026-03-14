@@ -144,7 +144,11 @@ async function handlePostularProyecto(e) {
 
     try {
         // 1. Upload file
-        const filePath = `${currentProfile.id}/${Date.now()}_${archivo.name.replace(/\s+/g, '_')}`;
+        // Sanitize filename: remove all chars not allowed by Supabase Storage
+        const safeName = archivo.name
+            .replace(/\s+/g, '_')
+            .replace(/[^a-zA-Z0-9._\-]/g, '');
+        const filePath = `${currentProfile.id}/${Date.now()}_${safeName}`;
         const { error: uploadError } = await supabaseClient.storage
             .from('postulaciones-docs')
             .upload(filePath, archivo, { upsert: false });
