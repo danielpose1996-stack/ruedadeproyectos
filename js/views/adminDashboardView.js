@@ -640,7 +640,8 @@ function renderAdminProjectsTable(projects) {
                 <td>${escapeHTML(asignado)}</td>
                 <td><span class="badge ${estadoClass[p.estado] || ''}">${p.estado}</span></td>
                 <td style="text-align: right;">
-                    <button class="btn btn-outline" onclick="deleteProject('${p.id}')" style="padding: 0.3rem 0.6rem; color: var(--status-danger); border-color: var(--status-danger);"><i class="fa-solid fa-trash"></i></button>
+                    <button class="btn btn-outline" onclick="openEditProjectModal('${p.id}')" style="padding: 0.3rem 0.6rem; color: var(--text-primary); border-color: var(--border-color); margin-right: 0.5rem;" title="Editar Proyecto"><i class="fa-solid fa-pen"></i></button>
+                    <button class="btn btn-outline" onclick="deleteProject('${p.id}')" style="padding: 0.3rem 0.6rem; color: var(--status-danger); border-color: var(--status-danger);" title="Eliminar Proyecto"><i class="fa-solid fa-trash"></i></button>
                 </td>
             </tr>
         `;
@@ -848,6 +849,172 @@ async function deleteProject(projectId) {
     } catch (e) {
         console.error("deleteProject Error:", e);
         alert("Ocurrió un error al intentar eliminar el proyecto.");
+    }
+}
+
+// ── EDITAR PROYECTO ────────────────────────────────────────────────────────────
+
+async function openEditProjectModal(projectId) {
+    const p = adminProjectsCache.find(x => x.id === projectId);
+    if (!p) return;
+
+    // Inject modal if not present
+    if (!document.getElementById('edit-project-modal')) {
+        document.body.insertAdjacentHTML('beforeend', `
+        <div id="edit-project-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.55); z-index:1000; justify-content:center; align-items:center;">
+            <div style="background:var(--bg-surface); padding:2rem; border-radius:16px; width:100%; max-width:520px; box-shadow:0 20px 60px rgba(0,0,0,0.3); max-height:90vh; overflow-y:auto;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                    <h3 style="color:var(--text-primary); margin:0;"><i class="fa-solid fa-pen" style="color:var(--primary-color);"></i> Editar Proyecto</h3>
+                    <button onclick="closeEditProjectModal()" style="background:none; border:none; cursor:pointer; color:var(--text-secondary); font-size:1.2rem;"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <form id="edit-project-form" onsubmit="handleEditProject(event)" style="display:flex; flex-direction:column; gap:1rem;">
+                    <input type="hidden" id="edit-proj-id">
+                    <div>
+                        <label style="display:block; margin-bottom:0.4rem; color:var(--text-primary); font-weight:500; font-size:0.9rem;">Nombre del Proyecto</label>
+                        <input type="text" id="edit-proj-nombre" required style="width:100%; padding:0.8rem; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-base); color:var(--text-primary); box-sizing:border-box;">
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                        <div>
+                            <label style="display:block; margin-bottom:0.4rem; color:var(--text-primary); font-weight:500; font-size:0.9rem;">Categoría</label>
+                            <select id="edit-proj-cat" required style="width:100%; padding:0.8rem; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-base); color:var(--text-primary);">
+                                <option value="Desarrollo">Desarrollo</option>
+                                <option value="Propuesta">Propuesta</option>
+                                <option value="Aplicación">Aplicación</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display:block; margin-bottom:0.4rem; color:var(--text-primary); font-weight:500; font-size:0.9rem;">Semestre</label>
+                            <select id="edit-proj-sem" required style="width:100%; padding:0.8rem; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-base); color:var(--text-primary);">
+                                <option value="1">1 (Primer Semestre)</option>
+                                <option value="2">2 (Segundo Semestre)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label style="display:block; margin-bottom:0.4rem; color:var(--text-primary); font-weight:500; font-size:0.9rem;">Año</label>
+                        <input type="number" id="edit-proj-year" required min="2020" max="2035" style="width:100%; padding:0.8rem; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-base); color:var(--text-primary); box-sizing:border-box;">
+                    </div>
+                    <div style="padding-top:0.75rem; border-top:1px solid var(--border-color);">
+                        <label style="display:block; margin-bottom:0.75rem; color:var(--text-primary); font-weight:500; font-size:0.9rem;">Docentes Evaluadores</label>
+                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.75rem;">
+                            <div><label style="font-size:0.8rem; color:var(--text-secondary);">Evaluador 1</label><select id="edit-proj-ev1" style="width:100%; padding:0.7rem; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-base); color:var(--text-primary);"><option value="">-- Ninguno --</option></select></div>
+                            <div><label style="font-size:0.8rem; color:var(--text-secondary);">Evaluador 2</label><select id="edit-proj-ev2" style="width:100%; padding:0.7rem; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-base); color:var(--text-primary);"><option value="">-- Ninguno --</option></select></div>
+                            <div><label style="font-size:0.8rem; color:var(--text-secondary);">Evaluador 3</label><select id="edit-proj-ev3" style="width:100%; padding:0.7rem; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-base); color:var(--text-primary);"><option value="">-- Ninguno --</option></select></div>
+                        </div>
+                    </div>
+                    <div>
+                        <label style="display:block; margin-bottom:0.4rem; color:var(--text-primary); font-weight:500; font-size:0.9rem;">Estudiante Asignado</label>
+                        <select id="edit-proj-student" style="width:100%; padding:0.8rem; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-base); color:var(--text-primary);"><option value="">-- Sin asignar --</option></select>
+                    </div>
+                    <div id="edit-proj-error" style="display:none; color:var(--status-danger); background:#FEE2E2; padding:0.75rem; border-radius:6px; font-size:0.9rem;"></div>
+                    <div style="display:flex; gap:1rem; margin-top:0.5rem;">
+                        <button type="button" class="btn btn-outline" onclick="closeEditProjectModal()" style="flex:1;">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" id="btn-edit-project" style="flex:1;">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>`);
+    }
+
+    // Populate basic fields
+    document.getElementById('edit-proj-id').value    = p.id;
+    document.getElementById('edit-proj-nombre').value = p.nombre;
+    document.getElementById('edit-proj-cat').value   = p.categoria;
+    document.getElementById('edit-proj-sem').value   = p.semestre;
+    document.getElementById('edit-proj-year').value  = p.anio;
+    document.getElementById('edit-proj-error').style.display = 'none';
+    document.getElementById('edit-project-modal').style.display = 'flex';
+
+    try {
+        // Load docentes
+        const { data: docentes } = await supabaseClient.from('perfiles').select('id, nombre').eq('rol', 'docente').order('nombre');
+        const evSelects = ['edit-proj-ev1','edit-proj-ev2','edit-proj-ev3'];
+        evSelects.forEach(selId => {
+            const sel = document.getElementById(selId);
+            sel.innerHTML = '<option value="">-- Ninguno --</option>';
+            (docentes || []).forEach(d => { const o = document.createElement('option'); o.value = d.id; o.textContent = d.nombre; sel.appendChild(o); });
+        });
+
+        // Pre-select current evaluators
+        const currentEvals = (p.proyecto_evaluadores || [])
+            .filter(pe => pe.perfiles)
+            .map(pe => pe.evaluador_id || '');
+        // Also fetch IDs directly
+        const { data: evalData } = await supabaseClient.from('proyecto_evaluadores').select('evaluador_id').eq('proyecto_id', p.id);
+        const evalIds = (evalData || []).map(e => e.evaluador_id);
+        evalIds.forEach((id, i) => { if (i < 3) document.getElementById(evSelects[i]).value = id || ''; });
+
+        // Load estudiantes
+        const { data: estudiantes } = await supabaseClient.from('perfiles').select('id, nombre').eq('rol', 'estudiante').order('nombre');
+        const selEst = document.getElementById('edit-proj-student');
+        selEst.innerHTML = '<option value="">-- Sin asignar --</option>';
+        (estudiantes || []).forEach(s => { const o = document.createElement('option'); o.value = s.id; o.textContent = s.nombre; selEst.appendChild(o); });
+
+        // Pre-select current student
+        const { data: studData } = await supabaseClient.from('proyecto_estudiantes').select('estudiante_id').eq('proyecto_id', p.id).maybeSingle();
+        if (studData?.estudiante_id) selEst.value = studData.estudiante_id;
+
+    } catch(err) { console.error('openEditProjectModal load error:', err); }
+}
+
+function closeEditProjectModal() {
+    const m = document.getElementById('edit-project-modal');
+    if (m) m.style.display = 'none';
+}
+
+async function handleEditProject(e) {
+    e.preventDefault();
+    if (!supabaseClient) return;
+
+    const btn    = document.getElementById('btn-edit-project');
+    const errObj = document.getElementById('edit-proj-error');
+    btn.disabled = true;
+    btn.textContent = 'Guardando...';
+    errObj.style.display = 'none';
+
+    const projectId = document.getElementById('edit-proj-id').value;
+    const nombre    = document.getElementById('edit-proj-nombre').value.trim();
+    const categoria = document.getElementById('edit-proj-cat').value;
+    const semestre  = parseInt(document.getElementById('edit-proj-sem').value);
+    const anio      = parseInt(document.getElementById('edit-proj-year').value);
+    const ev1 = document.getElementById('edit-proj-ev1').value;
+    const ev2 = document.getElementById('edit-proj-ev2').value;
+    const ev3 = document.getElementById('edit-proj-ev3').value;
+    const evalIds = [ev1, ev2, ev3].filter(v => v !== '');
+    const studentId = document.getElementById('edit-proj-student').value;
+
+    try {
+        // 1. Update basic project fields
+        const { error: updErr } = await supabaseClient
+            .from('proyectos')
+            .update({ nombre, categoria, semestre, anio })
+            .eq('id', projectId);
+        if (updErr) throw updErr;
+
+        // 2. Replace evaluators: delete old, insert new
+        await supabaseClient.from('proyecto_evaluadores').delete().eq('proyecto_id', projectId);
+        if (evalIds.length > 0) {
+            const inserts = evalIds.map(id => ({ proyecto_id: projectId, evaluador_id: id }));
+            const { error: evErr } = await supabaseClient.from('proyecto_evaluadores').insert(inserts);
+            if (evErr) console.error('Error actualizando evaluadores:', evErr);
+        }
+
+        // 3. Replace student: delete old, insert new
+        await supabaseClient.from('proyecto_estudiantes').delete().eq('proyecto_id', projectId);
+        if (studentId) {
+            const { error: stErr } = await supabaseClient.from('proyecto_estudiantes').insert([{ proyecto_id: projectId, estudiante_id: studentId }]);
+            if (stErr) console.error('Error actualizando estudiante:', stErr);
+        }
+
+        closeEditProjectModal();
+        loadAdminProjects();
+    } catch(err) {
+        console.error('handleEditProject Error:', err);
+        errObj.textContent = 'Error al guardar: ' + (err.message || '');
+        errObj.style.display = 'block';
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Guardar Cambios';
     }
 }
 
