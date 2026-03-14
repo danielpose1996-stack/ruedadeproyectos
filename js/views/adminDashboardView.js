@@ -13,6 +13,7 @@ function renderAdminDashboard() {
                 
                 <a href="#" class="sidebar-link active" id="sb-users" onclick="adminShowTab('users'); return false;"><i class="fa-solid fa-users-gear"></i> Gestión de Usuarios</a>
                 <a href="#" class="sidebar-link" id="sb-projects" onclick="adminShowTab('projects'); return false;"><i class="fa-solid fa-folder-tree"></i> Gestión de Proyectos</a>
+                <a href="#" class="sidebar-link" id="sb-postulaciones" onclick="adminShowTab('postulaciones'); return false;"><i class="fa-solid fa-inbox"></i> Proyectos Postulados</a>
                 
                 <div style="margin-top: auto;">
                     <a href="#" onclick="handleLogout(); return false;" class="sidebar-link" style="color: var(--status-danger);"><i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar sesión</a>
@@ -97,6 +98,42 @@ function renderAdminDashboard() {
                                     </thead>
                                     <tbody id="admin-projects-tbody">
                                         <tr><td colspan="7" style="text-align:center; padding: 2rem; color: var(--text-secondary);">Cargando proyectos...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== POSTULACIONES TAB ===== -->
+                    <div id="admin-tab-postulaciones" style="display: none;">
+                        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <div>
+                                <h2 style="color: var(--text-primary); margin-bottom: 0.3rem;">Proyectos Postulados</h2>
+                                <p style="color: var(--text-secondary); font-size: 0.9rem;">Gestiona las postulaciones de estudiantes antes de la Rueda.</p>
+                            </div>
+                        </header>
+                        <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                            <button class="btn btn-primary" id="pfbtn-todos" onclick="loadAdminPostulaciones('')" style="font-size:0.83rem;">Todos</button>
+                            <button class="btn btn-outline" id="pfbtn-pendiente" onclick="loadAdminPostulaciones('Pendiente de revisi\u00f3n')" style="font-size:0.83rem;">&#9203; Pendientes</button>
+                            <button class="btn btn-outline" id="pfbtn-revision" onclick="loadAdminPostulaciones('En revisi\u00f3n')" style="font-size:0.83rem;">&#128269; En revisi\u00f3n</button>
+                            <button class="btn btn-outline" id="pfbtn-aprobado" onclick="loadAdminPostulaciones('Aprobado')" style="font-size:0.83rem;">&#9989; Aprobados</button>
+                            <button class="btn btn-outline" id="pfbtn-noaprobado" onclick="loadAdminPostulaciones('No aprobado')" style="font-size:0.83rem;">&#10060; No aprobados</button>
+                        </div>
+                        <div class="card" style="padding: 0; overflow: hidden;">
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Proyecto</th>
+                                            <th>Estudiante</th>
+                                            <th>Categoría</th>
+                                            <th>Fecha</th>
+                                            <th>Estado</th>
+                                            <th style="text-align:right;">Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="admin-postulaciones-tbody">
+                                        <tr><td colspan="6" style="text-align:center; padding: 2rem; color: var(--text-secondary);">Cargando...</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -260,6 +297,28 @@ function renderAdminDashboard() {
                         <button type="submit" class="btn btn-primary" id="btn-create-project" style="flex: 1;">Registrar Proyecto</button>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <!-- ===== GESTIONAR POSTULACION MODAL ===== -->
+        <div id="gestionar-post-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.55); z-index:1000; justify-content:center; align-items:center;">
+            <div style="background:var(--bg-surface); padding:2rem; border-radius:16px; width:100%; max-width:560px; box-shadow:0 20px 60px rgba(0,0,0,0.3); max-height:90vh; overflow-y:auto;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                    <h3 style="color:var(--text-primary); margin:0;"><i class="fa-solid fa-inbox" style="color:var(--primary-color);"></i> Gestionar Postulación</h3>
+                    <button onclick="cerrarGestionarPost()" style="background:none; border:none; cursor:pointer; color:var(--text-secondary); font-size:1.2rem;"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div id="gpost-details" style="margin-bottom:1.5rem;"></div>
+                <div style="border-top:1px solid var(--border-color); padding-top:1.5rem;">
+                    <h4 style="color:var(--text-primary); margin-bottom:1rem;"><i class="fa-solid fa-user-tie"></i> Asignar Docente Revisor</h4>
+                    <div style="display:flex; gap:0.75rem;">
+                        <select id="gpost-select-docente" style="flex:1; padding:0.8rem; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-base); color:var(--text-primary);">
+                            <option value="">-- Selecciona un docente --</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="handleAsignarRevisor()" style="white-space:nowrap;"><i class="fa-solid fa-user-plus"></i> Asignar</button>
+                    </div>
+                    <div id="gpost-error" style="display:none; color:var(--status-danger); background:#FEE2E2; padding:0.75rem; border-radius:6px; margin-top:0.75rem; font-size:0.9rem;"></div>
+                    <div id="gpost-ok" style="display:none; color:#065f46; background:#D1FAE5; padding:0.75rem; border-radius:6px; margin-top:0.75rem; font-size:0.9rem;"></div>
+                </div>
             </div>
         </div>
     `;
@@ -506,24 +565,19 @@ async function confirmDeleteUser() {
 // --- ADMIN TAB SWITCHING ---
 
 function adminShowTab(tab) {
-    const usersTab = document.getElementById('admin-tab-users');
-    const projectsTab = document.getElementById('admin-tab-projects');
-    const sbUsers = document.getElementById('sb-users');
-    const sbProjects = document.getElementById('sb-projects');
-
-    if (tab === 'users') {
-        usersTab.style.display = '';
-        projectsTab.style.display = 'none';
-        sbUsers.classList.add('active');
-        sbProjects.classList.remove('active');
-        loadAdminUsers();
-    } else {
-        usersTab.style.display = 'none';
-        projectsTab.style.display = '';
-        sbUsers.classList.remove('active');
-        sbProjects.classList.add('active');
-        loadAdminProjects();
-    }
+    const tabs = ['users', 'projects', 'postulaciones'];
+    tabs.forEach(t => {
+        const el = document.getElementById(`admin-tab-${t}`);
+        const sb = document.getElementById(`sb-${t}`);
+        if (el) el.style.display = (t === tab) ? '' : 'none';
+        if (sb) {
+            if (t === tab) sb.classList.add('active');
+            else sb.classList.remove('active');
+        }
+    });
+    if (tab === 'users') loadAdminUsers();
+    else if (tab === 'projects') loadAdminProjects();
+    else if (tab === 'postulaciones') loadAdminPostulaciones('');
 }
 
 // --- ADMIN PROJECT MANAGEMENT ---
@@ -790,9 +844,141 @@ async function deleteProject(projectId) {
             .eq('id', projectId);
 
         if(error) throw error;
-        loadAdminProjects(); // Refresh
+        loadAdminProjects();
     } catch (e) {
         console.error("deleteProject Error:", e);
         alert("Ocurrió un error al intentar eliminar el proyecto.");
+    }
+}
+
+// ── PROYECTOS POSTULADOS ──────────────────────────────────────────────────────
+
+let currentGPostId = null;
+
+async function loadAdminPostulaciones(estadoFilter) {
+    if (!supabaseClient) return;
+    const tbody = document.getElementById('admin-postulaciones-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--text-secondary);"><i class="fa-solid fa-circle-notch fa-spin"></i> Cargando...</td></tr>`;
+    try {
+        let query = supabaseClient
+            .from('postulaciones')
+            .select(`*, estudiante:perfiles!postulaciones_estudiante_id_fkey (nombre), revisor:perfiles!postulaciones_docente_revisor_id_fkey (nombre)`)
+            .order('created_at', { ascending: false });
+        if (estadoFilter) query = query.eq('estado', estadoFilter);
+        const { data, error } = await query;
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--text-secondary);">No hay postulaciones${estadoFilter ? ' con este estado' : ''}.</td></tr>`;
+            return;
+        }
+        const estConfig = { 'Pendiente de revisión':'badge-warning', 'En revisión':'badge-info', 'Aprobado':'badge-success', 'No aprobado':'badge-danger' };
+        const catClass  = { 'Desarrollo':'badge-info', 'Propuesta':'badge-warning', 'Aplicado':'badge-success' };
+        tbody.innerHTML = data.map(p => {
+            const fecha = new Date(p.created_at).toLocaleDateString('es-CO');
+            return `
+                <tr>
+                    <td><strong>${escapeHTML(p.nombre)}</strong></td>
+                    <td>${escapeHTML(p.estudiante?.nombre || '—')}</td>
+                    <td><span class="badge ${catClass[p.categoria] || ''}">${p.categoria}</span></td>
+                    <td>${fecha}</td>
+                    <td><span class="badge ${estConfig[p.estado] || ''}">${p.estado}</span></td>
+                    <td style="text-align:right;">
+                        <button class="btn btn-outline" onclick="openGestionarPost('${p.id}')" style="padding:0.3rem 0.8rem;"><i class="fa-solid fa-gear"></i> Gestionar</button>
+                    </td>
+                </tr>`;
+        }).join('');
+    } catch (err) {
+        console.error('loadAdminPostulaciones Error:', err);
+        tbody.innerHTML = `<tr><td colspan="6" style="color:red; text-align:center; padding:2rem;">Error al cargar postulaciones.</td></tr>`;
+    }
+}
+
+async function openGestionarPost(id) {
+    currentGPostId = id;
+    const modal   = document.getElementById('gestionar-post-modal');
+    const details = document.getElementById('gpost-details');
+    const errBox  = document.getElementById('gpost-error');
+    const okBox   = document.getElementById('gpost-ok');
+    errBox.style.display = 'none';
+    okBox.style.display  = 'none';
+    modal.style.display  = 'flex';
+    details.innerHTML    = '<div style="text-align:center; padding:1rem;"><i class="fa-solid fa-circle-notch fa-spin" style="color:var(--primary-color);"></i></div>';
+
+    try {
+        const { data: p, error } = await supabaseClient
+            .from('postulaciones')
+            .select(`*, estudiante:perfiles!postulaciones_estudiante_id_fkey (nombre), revisor:perfiles!postulaciones_docente_revisor_id_fkey (nombre)`)
+            .eq('id', id).single();
+        if (error) throw error;
+
+        const estConfig = { 'Pendiente de revisión':'badge-warning', 'En revisión':'badge-info', 'Aprobado':'badge-success', 'No aprobado':'badge-danger' };
+        const fecha = new Date(p.created_at).toLocaleDateString('es-CO', { year:'numeric', month:'long', day:'numeric' });
+
+        let downloadBtn = '';
+        if (p.archivo_path) {
+            const { data: sd } = await supabaseClient.storage.from('postulaciones-docs').createSignedUrl(p.archivo_path, 3600);
+            if (sd?.signedUrl) {
+                downloadBtn = `<a href="${sd.signedUrl}" target="_blank" class="btn btn-outline" style="margin-top:0.75rem; display:inline-flex; align-items:center; gap:0.4rem;"><i class="fa-solid fa-file-word" style="color:#2563EB;"></i> Descargar Word</a>`;
+            }
+        }
+        const obs = p.observacion_docente
+            ? `<div style="margin-top:0.75rem; padding:0.75rem; background:var(--bg-base); border-radius:8px; border-left:3px solid var(--primary-color);"><p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:0.2rem;">Observación del docente:</p><p style="color:var(--text-primary); font-size:0.9rem;">${escapeHTML(p.observacion_docente)}</p></div>` : '';
+
+        details.innerHTML = `
+            <div style="display:grid; gap:0.75rem;">
+                <div><span style="color:var(--text-secondary); font-size:0.78rem; text-transform:uppercase;">Nombre</span><p style="color:var(--text-primary); font-weight:600;">${escapeHTML(p.nombre)}</p></div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+                    <div><span style="color:var(--text-secondary); font-size:0.78rem; text-transform:uppercase;">Estudiante</span><p style="color:var(--text-primary);">${escapeHTML(p.estudiante?.nombre || '—')}</p></div>
+                    <div><span style="color:var(--text-secondary); font-size:0.78rem; text-transform:uppercase;">Categoría</span><p style="color:var(--text-primary);">${p.categoria}</p></div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+                    <div><span style="color:var(--text-secondary); font-size:0.78rem; text-transform:uppercase;">Fecha</span><p style="color:var(--text-primary);">${fecha}</p></div>
+                    <div><span style="color:var(--text-secondary); font-size:0.78rem; text-transform:uppercase;">Estado</span><p><span class="badge ${estConfig[p.estado] || ''}">${p.estado}</span></p></div>
+                </div>
+                <div><span style="color:var(--text-secondary); font-size:0.78rem; text-transform:uppercase;">Revisor asignado</span><p style="color:var(--text-primary);">${escapeHTML(p.revisor?.nombre || 'Sin asignar')}</p></div>
+                ${obs}
+                ${downloadBtn}
+            </div>`;
+
+        // Load docentes into select
+        const sel = document.getElementById('gpost-select-docente');
+        const { data: docs } = await supabaseClient.from('perfiles').select('id, nombre').eq('rol', 'docente').order('nombre');
+        sel.innerHTML = '<option value="">-- Selecciona un docente revisor --</option>';
+        (docs || []).forEach(d => { const o = document.createElement('option'); o.value = d.id; o.textContent = d.nombre; sel.appendChild(o); });
+
+    } catch (err) {
+        console.error('openGestionarPost Error:', err);
+        details.innerHTML = `<p style="color:var(--status-danger);">Error al cargar los detalles.</p>`;
+    }
+}
+
+function cerrarGestionarPost() {
+    document.getElementById('gestionar-post-modal').style.display = 'none';
+    currentGPostId = null;
+}
+
+async function handleAsignarRevisor() {
+    if (!supabaseClient || !currentGPostId) return;
+    const docenteId = document.getElementById('gpost-select-docente').value;
+    const errBox = document.getElementById('gpost-error');
+    const okBox  = document.getElementById('gpost-ok');
+    errBox.style.display = 'none';
+    okBox.style.display  = 'none';
+    if (!docenteId) { errBox.textContent = 'Selecciona un docente.'; errBox.style.display = 'block'; return; }
+    try {
+        const { error } = await supabaseClient
+            .from('postulaciones')
+            .update({ docente_revisor_id: docenteId, estado: 'En revisión' })
+            .eq('id', currentGPostId);
+        if (error) throw error;
+        okBox.innerHTML = '<i class="fa-solid fa-circle-check"></i> Docente asignado correctamente. Estado cambiado a "En revisión".';
+        okBox.style.display = 'block';
+        loadAdminPostulaciones('');
+    } catch (err) {
+        console.error('handleAsignarRevisor Error:', err);
+        errBox.textContent = 'Error al asignar el docente: ' + (err.message || '');
+        errBox.style.display = 'block';
     }
 }
