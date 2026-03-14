@@ -639,9 +639,11 @@ function renderAdminProjectsTable(projects) {
                 <td style="text-align:center;">${p.anio}</td>
                 <td>${escapeHTML(asignado)}</td>
                 <td><span class="badge ${estadoClass[p.estado] || ''}">${p.estado}</span></td>
-                <td style="text-align: right;">
-                    <button class="btn btn-outline" onclick="openEditProjectModal('${p.id}')" style="padding: 0.3rem 0.6rem; color: var(--text-primary); border-color: var(--border-color); margin-right: 0.5rem;" title="Editar Proyecto"><i class="fa-solid fa-pen"></i></button>
-                    <button class="btn btn-outline" onclick="deleteProject('${p.id}')" style="padding: 0.3rem 0.6rem; color: var(--status-danger); border-color: var(--status-danger);" title="Eliminar Proyecto"><i class="fa-solid fa-trash"></i></button>
+                <td>
+                    <div style="display: flex; justify-content: flex-end; align-items: center; gap: 0.75rem;">
+                        <button class="btn btn-outline" onclick="openEditProjectModal('${p.id}')" style="padding: 0.3rem 0.7rem;" title="Editar Proyecto"><i class="fa-solid fa-pen"></i></button>
+                        <button class="btn btn-outline" onclick="deleteProject('${p.id}')" style="padding: 0.3rem 0.7rem; color: var(--status-danger); border-color: var(--status-danger);" title="Eliminar Proyecto"><i class="fa-solid fa-trash"></i></button>
+                    </div>
                 </td>
             </tr>
         `;
