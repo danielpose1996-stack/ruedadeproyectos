@@ -7,9 +7,10 @@ if (window.supabase) {
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }
 
-// XSS Sanitization helper
+// XSS Sanitization helper - Improved
 function escapeHTML(str) {
-    if (typeof str !== 'string') return str;
+    if (str === null || str === undefined) return '';
+    if (typeof str !== 'string') str = String(str);
     return str
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')

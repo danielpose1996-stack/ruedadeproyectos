@@ -364,7 +364,7 @@ function renderAdminUsersTable(users) {
         return `
             <tr>
                 <td><strong>${escapeHTML(user.nombre)}</strong></td>
-                <td><span class="badge ${badgeClass}">${user.rol}</span></td>
+                <td><span class="badge ${badgeClass}">${escapeHTML(user.rol)}</span></td>
                 <td>${date}</td>
                 <td style="text-align: right;">
                     ${user.rol !== 'admin' ? `
@@ -416,10 +416,10 @@ async function handleCreateUser(e) {
     
     const payload = {
         action: 'createUser',
-        nombre: document.getElementById('new-user-name').value.trim(),
-        email: document.getElementById('new-user-email').value.trim(),
+        nombre: escapeHTML(document.getElementById('new-user-name').value.trim()),
+        email: document.getElementById('new-user-email').value.trim(), // email field is validated by input type=email
         password: document.getElementById('new-user-password').value,
-        rol: document.getElementById('new-user-role').value
+        rol: escapeHTML(document.getElementById('new-user-role').value)
     };
     
     try {
@@ -486,10 +486,10 @@ async function handleEditUser(e) {
     const payload = {
         action: 'editUser',
         userId: document.getElementById('edit-user-id').value,
-        nombre: document.getElementById('edit-user-name').value.trim(),
+        nombre: escapeHTML(document.getElementById('edit-user-name').value.trim()),
         email: document.getElementById('edit-user-email').value.trim() || undefined,
         password: document.getElementById('edit-user-password').value || undefined,
-        rol: document.getElementById('edit-user-role').value
+        rol: escapeHTML(document.getElementById('edit-user-role').value)
     };
     
     try {
@@ -634,11 +634,11 @@ function renderAdminProjectsTable(projects) {
         return `
             <tr>
                 <td><strong>${escapeHTML(p.nombre)}</strong></td>
-                <td><span class="badge ${catClass[p.categoria] || ''}">${p.categoria}</span></td>
-                <td style="text-align:center;">${p.semestre}°</td>
-                <td style="text-align:center;">${p.anio}</td>
+                <td><span class="badge ${catClass[p.categoria] || ''}">${escapeHTML(p.categoria)}</span></td>
+                <td style="text-align:center;">${escapeHTML(p.semestre)}°</td>
+                <td style="text-align:center;">${escapeHTML(p.anio)}</td>
                 <td>${escapeHTML(asignado)}</td>
-                <td><span class="badge ${estadoClass[p.estado] || ''}">${p.estado}</span></td>
+                <td><span class="badge ${estadoClass[p.estado] || ''}">${escapeHTML(p.estado)}</span></td>
                 <td>
                     <div style="display: flex; justify-content: flex-end; align-items: center; gap: 0.75rem;">
                         <button class="btn btn-outline" onclick="openEditProjectModal('${p.id}')" style="padding: 0.3rem 0.7rem;" title="Editar Proyecto"><i class="fa-solid fa-pen"></i></button>
@@ -771,8 +771,8 @@ async function handleCreateProject(e) {
     errObj.style.display = 'none';
 
     const payload = {
-        nombre: document.getElementById('new-project-name').value.trim(),
-        categoria: document.getElementById('new-project-cat').value,
+        nombre: escapeHTML(document.getElementById('new-project-name').value.trim()),
+        categoria: escapeHTML(document.getElementById('new-project-cat').value),
         semestre: parseInt(document.getElementById('new-project-sem').value),
         anio: parseInt(document.getElementById('new-project-year').value),
         estado: 'Pendiente'
@@ -1050,9 +1050,9 @@ async function loadAdminPostulaciones(estadoFilter) {
                 <tr>
                     <td><strong>${escapeHTML(p.nombre)}</strong></td>
                     <td>${escapeHTML(p.estudiante?.nombre || '—')}</td>
-                    <td><span class="badge ${catClass[p.categoria] || ''}">${p.categoria}</span></td>
+                    <td><span class="badge ${catClass[p.categoria] || ''}">${escapeHTML(p.categoria)}</span></td>
                     <td>${fecha}</td>
-                    <td><span class="badge ${estConfig[p.estado] || ''}">${p.estado}</span></td>
+                    <td><span class="badge ${estConfig[p.estado] || ''}">${escapeHTML(p.estado)}</span></td>
                     <td style="text-align:right;">
                         <button class="btn btn-outline" onclick="openGestionarPost('${p.id}')" style="padding:0.3rem 0.8rem;"><i class="fa-solid fa-gear"></i> Gestionar</button>
                     </td>
@@ -1100,11 +1100,11 @@ async function openGestionarPost(id) {
                 <div><span style="color:var(--text-secondary); font-size:0.78rem; text-transform:uppercase;">Nombre</span><p style="color:var(--text-primary); font-weight:600;">${escapeHTML(p.nombre)}</p></div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
                     <div><span style="color:var(--text-secondary); font-size:0.78rem; text-transform:uppercase;">Estudiante</span><p style="color:var(--text-primary);">${escapeHTML(p.estudiante?.nombre || '—')}</p></div>
-                    <div><span style="color:var(--text-secondary); font-size:0.78rem; text-transform:uppercase;">Categoría</span><p style="color:var(--text-primary);">${p.categoria}</p></div>
+                    <div><span style="color:var(--text-secondary); font-size:0.78rem; text-transform:uppercase;">Categoría</span><p style="color:var(--text-primary);">${escapeHTML(p.categoria)}</p></div>
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
                     <div><span style="color:var(--text-secondary); font-size:0.78rem; text-transform:uppercase;">Fecha</span><p style="color:var(--text-primary);">${fecha}</p></div>
-                    <div><span style="color:var(--text-secondary); font-size:0.78rem; text-transform:uppercase;">Estado</span><p><span class="badge ${estConfig[p.estado] || ''}">${p.estado}</span></p></div>
+                    <div><span style="color:var(--text-secondary); font-size:0.78rem; text-transform:uppercase;">Estado</span><p><span class="badge ${estConfig[p.estado] || ''}">${escapeHTML(p.estado)}</span></p></div>
                 </div>
                 <div><span style="color:var(--text-secondary); font-size:0.78rem; text-transform:uppercase;">Revisor asignado</span><p style="color:var(--text-primary);">${escapeHTML(p.revisor?.nombre || 'Sin asignar')}</p></div>
                 ${obs}

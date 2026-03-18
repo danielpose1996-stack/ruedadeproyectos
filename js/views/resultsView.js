@@ -122,7 +122,7 @@ async function loadHistoricalRankings() {
                 <div class="card" style="padding: 3rem; text-align: center; color: var(--text-secondary);">
                     <i class="fa-solid fa-ranking-star" style="font-size: 3rem; margin-bottom: 1rem; color: #cbd5e1;"></i>
                     <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">No hay proyectos evaluados</h3>
-                    <p>Aún no existen proyectos evaluados para <strong>${category}</strong> en el periodo <strong>${year}-${semester}</strong>.</p>
+                    <p>Aún no existen proyectos evaluados para <strong>${escapeHTML(category)}</strong> en el periodo <strong>${escapeHTML(year)}-${escapeHTML(semester)}</strong>.</p>
                 </div>
             `;
             return;
@@ -147,7 +147,7 @@ async function loadHistoricalRankings() {
         container.innerHTML = `
             <div class="card" style="padding: 2rem;">
                 <h2 style="color: var(--text-primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <i class="fa-solid fa-trophy" style="color: #F59E0B;"></i> Top 5 - Categoría: ${category} (${year}-${semester})
+                    <i class="fa-solid fa-trophy" style="color: #F59E0B;"></i> Top 5 - Categoría: ${escapeHTML(category)} (${escapeHTML(year)}-${escapeHTML(semester)})
                 </h2>
                 
                 <div class="table-container">

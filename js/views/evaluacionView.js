@@ -169,7 +169,7 @@ async function initEvaluacionLogic(projectId) {
                 const headerHtml = `
                     <div>
                         <h1 style="color: var(--primary-color); font-size: 1.8rem; margin-bottom: 0.5rem;" id="eval-proj-title">${escapeHTML(pData.nombre)}</h1>
-                        <p style="color: var(--text-secondary); margin-bottom: 0.5rem;"><strong>Categoría:</strong> <span class="badge ${catClass[pData.categoria] || ''}">${pData.categoria}</span></p>
+                        <p style="color: var(--text-secondary); margin-bottom: 0.5rem;"><strong>Categoría:</strong> <span class="badge ${catClass[pData.categoria] || ''}">${escapeHTML(pData.categoria)}</span></p>
                         <p style="color: var(--text-secondary);"><strong>Integrantes:</strong> ${escapeHTML(studentsText)}</p>
                     </div>
                 `;
@@ -292,7 +292,7 @@ async function submitEvaluation() {
                 proyecto_id: currentEvaluationProjectId,
                 evaluador_id: currentProfile.id,
                 puntaje_final: finalScore,
-                observaciones: observaciones,
+                observaciones: escapeHTML(observaciones),
                 rubrica_detalle: rubricData
             }]);
 

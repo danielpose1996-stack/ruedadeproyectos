@@ -159,8 +159,8 @@ async function handlePostularProyecto(e) {
             .from('postulaciones')
             .insert([{
                 estudiante_id: currentProfile.id,
-                nombre,
-                categoria,
+                nombre: escapeHTML(nombre),
+                categoria: escapeHTML(categoria),
                 archivo_path: filePath,
                 estado: 'Pendiente de revisión'
             }]);
@@ -230,10 +230,10 @@ async function loadMisPostulaciones() {
                     <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.5rem;">
                         <div>
                             <h3 style="color:var(--text-primary); margin-bottom:0.2rem;">${escapeHTML(p.nombre)}</h3>
-                            <p style="color:var(--text-secondary); font-size:0.85rem;"><strong>Categoría:</strong> ${p.categoria} &nbsp;·&nbsp; <strong>Enviado:</strong> ${fecha}</p>
+                            <p style="color:var(--text-secondary); font-size:0.85rem;"><strong>Categoría:</strong> ${escapeHTML(p.categoria)} &nbsp;·&nbsp; <strong>Enviado:</strong> ${fecha}</p>
                             ${revisor}
                         </div>
-                        <span class="badge ${cfg.badge}"><i class="fa-solid ${cfg.icon}"></i> ${p.estado}</span>
+                        <span class="badge ${cfg.badge}"><i class="fa-solid ${cfg.icon}"></i> ${escapeHTML(p.estado)}</span>
                     </div>
                     ${obs}
                 </div>`;
@@ -289,10 +289,10 @@ async function loadEstudianteDashboard() {
                 htmlContent += `
                     <div class="card" style="padding: 2.5rem; border-top: 5px solid var(--border-color); margin-bottom: 2rem;">
                         <h2 style="color: var(--text-primary); margin-bottom: 0.5rem;">${escapeHTML(p.nombre)}</h2>
-                        <p style="color: var(--text-secondary); margin-bottom: 0.5rem;"><strong>Categoría:</strong> <span class="badge ${catClass[p.categoria] || ''}">${p.categoria}</span></p>
+                        <p style="color: var(--text-secondary); margin-bottom: 0.5rem;"><strong>Categoría:</strong> <span class="badge ${catClass[p.categoria] || ''}">${escapeHTML(p.categoria)}</span></p>
                         <div style="margin-top: 2rem; padding: 1.5rem; background-color: var(--bg-surface-elevated); border-radius: 8px; text-align: center;">
                             <i class="fa-regular fa-clock" style="font-size: 2rem; color: var(--text-secondary); margin-bottom: 1rem;"></i>
-                            <p style="color: var(--text-secondary);">Este proyecto aún está en estado <strong>${p.estado}</strong>.</p>
+                            <p style="color: var(--text-secondary);">Este proyecto aún está en estado <strong>${escapeHTML(p.estado)}</strong>.</p>
                         </div>
                     </div>`;
             } else {
@@ -314,8 +314,8 @@ async function loadEstudianteDashboard() {
                             <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem; margin-bottom:2rem; border-bottom:1px solid var(--border-color); padding-bottom:1.5rem;">
                                 <div>
                                     <h2 style="color:var(--text-primary); margin-bottom:0.5rem;">${escapeHTML(p.nombre)}</h2>
-                                    <p style="color:var(--text-secondary); margin-bottom:0.5rem;"><strong>Categoría:</strong> <span class="badge ${catClass[p.categoria] || ''}">${p.categoria}</span></p>
-                                    <p style="color:var(--text-secondary);"><strong>Periodo:</strong> Semestre ${p.semestre} - ${p.anio}</p>
+                                    <p style="color:var(--text-secondary); margin-bottom:0.5rem;"><strong>Categoría:</strong> <span class="badge ${catClass[p.categoria] || ''}">${escapeHTML(p.categoria)}</span></p>
+                                    <p style="color:var(--text-secondary);"><strong>Periodo:</strong> Semestre ${escapeHTML(p.semestre)} - ${escapeHTML(p.anio)}</p>
                                 </div>
                                 <div style="background:var(--primary-light); color:var(--primary-color); padding:1rem 1.5rem; border-radius:8px; text-align:center;">
                                     <span style="display:block; font-size:0.8rem; text-transform:uppercase; font-weight:600; margin-bottom:0.2rem;">Puntaje Promedio</span>

@@ -208,8 +208,8 @@ async function loadDocenteProjects() {
                 pendientesHTML += `
                     <tr>
                         <td><strong>${escapeHTML(p.nombre)}</strong></td>
-                        <td><span class="badge ${catClass[p.categoria] || ''}">${p.categoria}</span></td>
-                        <td>${p.semestre}° / ${p.anio}</td>
+                        <td><span class="badge ${catClass[p.categoria] || ''}">${escapeHTML(p.categoria)}</span></td>
+                        <td>${escapeHTML(p.semestre)}° / ${escapeHTML(p.anio)}</td>
                         <td><span class="badge badge-warning">Pendiente (Tú)</span></td>
                         <td>
                             <button class="btn btn-primary" onclick="navigateTo('evaluacion', { projectId: '${p.id}' })">Calificar <i class="fa-solid fa-angle-right"></i></button>
@@ -225,10 +225,10 @@ async function loadDocenteProjects() {
                 enviadasHTML += `
                     <tr>
                         <td><strong>${escapeHTML(p.nombre)}</strong></td>
-                        <td><span class="badge ${catClass[p.categoria] || ''}">${p.categoria}</span></td>
-                        <td>${p.semestre}° / ${p.anio}</td>
+                        <td><span class="badge ${catClass[p.categoria] || ''}">${escapeHTML(p.categoria)}</span></td>
+                        <td>${escapeHTML(p.semestre)}° / ${escapeHTML(p.anio)}</td>
                         <td style="font-weight: 700; color: var(--primary-color);">
-                            <span class="badge badge-success" style="margin-right: 0.5rem;">Enviado</span> ${score}
+                            <span class="badge badge-success" style="margin-right: 0.5rem;">Enviado</span> ${escapeHTML(score)}
                         </td>
                     </tr>
                 `;
@@ -289,7 +289,7 @@ async function loadDocenteRevision() {
                 <tr>
                     <td><strong>${escapeHTML(p.nombre)}</strong></td>
                     <td>${escapeHTML(p.estudiante?.nombre || '—')}</td>
-                    <td><span class="badge ${catClass[p.categoria] || ''}">${p.categoria}</span></td>
+                    <td><span class="badge ${catClass[p.categoria] || ''}">${escapeHTML(p.categoria)}</span></td>
                     <td>${fecha}</td>
                     <td><button class="btn btn-primary" onclick="abrirModalRevision('${p.id}')" style="padding:0.35rem 0.9rem;"><i class="fa-solid fa-file-pen"></i> Revisar</button></td>
                 </tr>`;
@@ -356,7 +356,7 @@ async function abrirModalRevision(id) {
             <div style="display:grid; gap:0.6rem; padding:1rem; background:var(--bg-base); border-radius:8px;">
                 <p><strong>Proyecto:</strong> ${escapeHTML(p.nombre)}</p>
                 <p><strong>Estudiante:</strong> ${escapeHTML(p.estudiante?.nombre || '—')}</p>
-                <p><strong>Categoría:</strong> <span class="badge ${catClass[p.categoria] || ''}">${p.categoria}</span></p>
+                <p><strong>Categoría:</strong> <span class="badge ${catClass[p.categoria] || ''}">${escapeHTML(p.categoria)}</span></p>
                 ${downloadBtn}
             </div>`;
     } catch (err) {
@@ -385,7 +385,7 @@ async function enviarRevision(decision) {
     }
 
     try {
-        const updates = { estado: decision, observacion_docente: observacion };
+        const updates = { estado: decision, observacion_docente: escapeHTML(observacion) };
 
         // If approved, auto-create project in proyectos table
         if (decision === 'Aprobado') {
