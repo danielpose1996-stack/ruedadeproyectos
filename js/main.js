@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    initThemeToggle();
     initRouter();
     
     // Default initial route

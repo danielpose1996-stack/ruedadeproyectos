@@ -1,36 +1,3 @@
-// Theming
-const root = document.documentElement;
-const themeToggleBtn = document.getElementById('theme-toggle-btn');
-let isDarkMode = localStorage.getItem('theme') === 'dark';
-
-// --- THEME TOGGLE LOGIC ---
-function initThemeToggle() {
-    const themeBtn = document.getElementById('theme-toggle');
-    const icon = themeBtn.querySelector('i');
-    
-    // Check saved preference or OS preference
-    const savedTheme = localStorage.getItem('ruedapro-theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-        document.body.setAttribute('data-theme', 'dark');
-        icon.classList.replace('fa-moon', 'fa-sun');
-    }
-
-    themeBtn.addEventListener('click', () => {
-        const currentTheme = document.body.getAttribute('data-theme');
-        if (currentTheme === 'light') {
-            document.body.setAttribute('data-theme', 'dark');
-            icon.classList.replace('fa-moon', 'fa-sun');
-            localStorage.setItem('ruedapro-theme', 'dark');
-        } else {
-            document.body.setAttribute('data-theme', 'light');
-            icon.classList.replace('fa-sun', 'fa-moon');
-            localStorage.setItem('ruedapro-theme', 'light');
-        }
-    });
-}
-
 // --- BASIC JS ROUTER ---
 function initRouter() {
     const navLinks = document.querySelectorAll('[data-route]');
