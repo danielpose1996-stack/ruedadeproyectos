@@ -1,61 +1,92 @@
 function renderAdminDashboard() {
     const adminName = currentProfile?.nombre || 'Administrador';
     return `
-        <div style="display: flex; min-height: calc(100vh - 70px - 100px);">
+        <div class="flex flex-col md:flex-row min-h-[calc(100vh-80px)] bg-bg-base">
             
             <!-- Sidebar -->
-            <aside style="width: 260px; background-color: var(--bg-surface); border-right: 1px solid var(--border-color); padding: 2rem 1rem; display: flex; flex-direction: column; gap: 0.5rem; flex-shrink: 0;">
-                <div style="padding: 0 1rem 1.5rem; border-bottom: 1px solid var(--border-color); margin-bottom: 1rem;">
-                    <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px;">Sesión activa</p>
-                    <p style="font-weight: 600; color: var(--text-primary);">${adminName}</p>
+            <aside class="w-full md:w-64 bg-surface border-r border-border-color p-8 flex flex-col gap-2 shrink-0 shadow-sm z-20">
+                <div class="pb-8 mb-6 border-b border-slate-50">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Sesión Administrativa</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center font-black">
+                            ${adminName.charAt(0)}
+                        </div>
+                        <p class="font-black text-slate-800 truncate">${adminName}</p>
+                    </div>
                 </div>
-                <h3 style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; padding-left: 1rem;">Panel</h3>
+
+                <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest px-4 mb-2">Módulos</p>
                 
-                <a href="#" class="sidebar-link active" id="sb-users" onclick="adminShowTab('users'); return false;"><i class="fa-solid fa-users-gear"></i> Gestión de Usuarios</a>
-                <a href="#" class="sidebar-link" id="sb-projects" onclick="adminShowTab('projects'); return false;"><i class="fa-solid fa-folder-tree"></i> Gestión de Proyectos</a>
-                <a href="#" class="sidebar-link" id="sb-postulaciones" onclick="adminShowTab('postulaciones'); return false;"><i class="fa-solid fa-inbox"></i> Proyectos Postulados</a>
+                <nav class="space-y-1">
+                    <a href="#" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl font-bold text-slate-500 hover:bg-slate-50 hover:text-primary transition-all group active-sidebar-link" id="sb-users" onclick="adminShowTab('users'); return false;">
+                        <i class="fa-solid fa-users-gear text-lg opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all"></i> 
+                        Gestión de Usuarios
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl font-bold text-slate-500 hover:bg-slate-50 hover:text-primary transition-all group" id="sb-projects" onclick="adminShowTab('projects'); return false;">
+                        <i class="fa-solid fa-folder-tree text-lg opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all"></i> 
+                        Gestión de Proyectos
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl font-bold text-slate-500 hover:bg-slate-50 hover:text-primary transition-all group" id="sb-postulaciones" onclick="adminShowTab('postulaciones'); return false;">
+                        <i class="fa-solid fa-inbox text-lg opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all"></i> 
+                        Proyectos Postulados
+                    </a>
+                </nav>
                 
-                <div style="margin-top: auto;">
-                    <a href="#" onclick="handleLogout(); return false;" class="sidebar-link" style="color: var(--status-danger);"><i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar sesión</a>
+                <div class="mt-auto pt-8 border-t border-slate-50">
+                    <a href="#" onclick="handleLogout(); return false;" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl font-bold text-status-danger hover:bg-red-50 transition-all group">
+                        <i class="fa-solid fa-arrow-right-from-bracket text-lg opacity-60 group-hover:scale-110 transition-all"></i> 
+                        Cerrar Sesión
+                    </a>
                 </div>
             </aside>
 
             <!-- Main Content -->
-            <main style="flex: 1; padding: 2rem; background-color: var(--bg-base); overflow-y: auto;">
-                <div style="max-width: 1000px; margin: 0 auto;">
+            <main class="flex-1 p-4 md:p-8 overflow-y-auto">
+                <div class="max-w-[1440px] mx-auto space-y-10">
                     
                     <!-- ===== USERS TAB ===== -->
-                    <div id="admin-tab-users">
-                        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-                            <div>
-                                <h2 style="color: var(--text-primary); margin-bottom: 0.3rem;">Gestión de Usuarios</h2>
-                                <p style="color: var(--text-secondary); font-size: 0.9rem;">Crea y administra cuentas de docentes y estudiantes.</p>
+                    <div id="admin-tab-users" class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <header class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                            <div class="space-y-1">
+                                <h2 class="text-3xl font-black text-slate-800 tracking-tight">Gestión de Usuarios</h2>
+                                <p class="text-slate-500 font-medium">Administra las credenciales y perfiles de acceso al ecosistema.</p>
                             </div>
-                            <button class="btn btn-primary" onclick="showCreateUserModal()"><i class="fa-solid fa-user-plus"></i> Nuevo Usuario</button>
+                            <button class="bg-primary text-white font-black px-8 py-4 rounded-2xl hover:bg-primary-dark shadow-xl shadow-primary/20 transition-all transform hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2" 
+                                onclick="showCreateUserModal()">
+                                <i class="fa-solid fa-user-plus text-sm"></i> Nuevo Usuario
+                            </button>
                         </header>
 
-                        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
-                            <input type="text" id="admin-search-users" placeholder="Buscar por nombre..." onkeyup="filterAdminUsers()" style="flex: 1; padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-surface); color: var(--text-primary);">
-                            <select id="admin-filter-role" onchange="filterAdminUsers()" style="padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-surface); color: var(--text-primary);">
-                                <option value="">Todos los roles</option>
-                                <option value="docente">Docentes</option>
-                                <option value="estudiante">Estudiantes</option>
-                            </select>
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <div class="relative flex-1">
+                                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                <input type="text" id="admin-search-users" placeholder="Buscar por nombre..." onkeyup="filterAdminUsers()" 
+                                    class="w-full pl-12 pr-6 py-4 bg-surface border border-slate-100 rounded-2xl text-slate-700 font-bold focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all shadow-sm">
+                            </div>
+                            <div class="relative">
+                                <select id="admin-filter-role" onchange="filterAdminUsers()" 
+                                    class="pl-6 pr-12 py-4 bg-surface border border-slate-100 rounded-2xl text-slate-700 font-bold appearance-none focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all shadow-sm min-w-[200px] cursor-pointer">
+                                    <option value="">Todos los roles</option>
+                                    <option value="docente">Docentes</option>
+                                    <option value="estudiante">Estudiantes</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                            </div>
                         </div>
 
-                        <div class="card" style="padding: 0; overflow: hidden;">
-                            <div class="table-container">
-                                <table class="data-table">
+                        <div class="bg-surface rounded-[32px] shadow-premium border border-slate-100 overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse">
                                     <thead>
-                                        <tr>
-                                            <th>Nombre</th>
-                                            <th>Rol</th>
-                                            <th>Fecha Registro</th>
-                                            <th style="text-align: right;">Acciones</th>
+                                        <tr class="bg-slate-50/50">
+                                            <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Nombre Completo</th>
+                                            <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Rol de Acceso</th>
+                                            <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Registro</th>
+                                            <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Acciones</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="admin-users-tbody">
-                                        <tr><td colspan="4" style="text-align:center; padding: 2rem; color: var(--text-secondary);">Cargando usuarios...</td></tr>
+                                    <tbody id="admin-users-tbody" class="divide-y divide-slate-50">
+                                        <tr><td colspan="4" class="px-8 py-20 text-center"><i class="fa-solid fa-circle-notch fa-spin text-2xl text-primary/30"></i></td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -63,41 +94,51 @@ function renderAdminDashboard() {
                     </div>
 
                     <!-- ===== PROJECTS TAB ===== -->
-                    <div id="admin-tab-projects" style="display: none;">
-                        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-                            <div>
-                                <h2 style="color: var(--text-primary); margin-bottom: 0.3rem;">Gestión de Proyectos</h2>
-                                <p style="color: var(--text-secondary); font-size: 0.9rem;">Registra y administra los proyectos de cada semestre.</p>
+                    <div id="admin-tab-projects" class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 hidden">
+                        <header class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                            <div class="space-y-1">
+                                <h2 class="text-3xl font-black text-slate-800 tracking-tight">Gestión de Proyectos</h2>
+                                <p class="text-slate-500 font-medium">Control centralizado de proyectos y asignación de evaluadores.</p>
                             </div>
-                            <button class="btn btn-primary" onclick="showCreateProjectModal()"><i class="fa-solid fa-folder-plus"></i> Nuevo Proyecto</button>
+                            <button class="bg-primary text-white font-black px-8 py-4 rounded-2xl hover:bg-primary-dark shadow-xl shadow-primary/20 transition-all transform hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2" 
+                                onclick="showCreateProjectModal()">
+                                <i class="fa-solid fa-folder-plus text-sm"></i> Registrar Proyecto
+                            </button>
                         </header>
 
-                        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
-                            <input type="text" id="admin-search-projects" placeholder="Buscar proyecto..." onkeyup="filterAdminProjects()" style="flex: 1; min-width: 200px; padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-surface); color: var(--text-primary);">
-                            <select id="admin-filter-cat" onchange="filterAdminProjects()" style="padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-surface); color: var(--text-primary);">
-                                <option value="">Todas las categorías</option>
-                                <option value="Desarrollo">Desarrollo</option>
-                                <option value="Propuesta">Propuesta</option>
-                                <option value="Aplicación">Aplicación</option>
-                            </select>
+                        <div class="flex flex-wrap gap-4">
+                            <div class="relative flex-grow min-w-[300px]">
+                                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                <input type="text" id="admin-search-projects" placeholder="Buscar proyecto..." onkeyup="filterAdminProjects()" 
+                                    class="w-full pl-12 pr-6 py-4 bg-surface border border-slate-100 rounded-2xl text-slate-700 font-bold focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all shadow-sm">
+                            </div>
+                            <div class="relative min-w-[200px]">
+                                <select id="admin-filter-cat" onchange="filterAdminProjects()" 
+                                    class="w-full pl-6 pr-12 py-4 bg-surface border border-slate-100 rounded-2xl text-slate-700 font-bold appearance-none focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all shadow-sm cursor-pointer">
+                                    <option value="">Todas las categorías</option>
+                                    <option value="Desarrollo">Desarrollo</option>
+                                    <option value="Propuesta">Propuesta</option>
+                                    <option value="Aplicación">Aplicación</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                            </div>
                         </div>
 
-                        <div class="card" style="padding: 0; overflow: hidden;">
-                            <div class="table-container">
-                                <table class="data-table">
+                        <div class="bg-surface rounded-[32px] shadow-premium border border-slate-100 overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse min-w-full lg:table-fixed">
                                     <thead>
-                                        <tr>
-                                            <th>Nombre del Proyecto</th>
-                                            <th>Categoría</th>
-                                            <th>Semestre</th>
-                                            <th>Año</th>
-                                            <th>Docente Asignado</th>
-                                            <th>Estado</th>
-                                            <th style="text-align: right;">Acciones</th>
+                                        <tr class="bg-slate-50/50">
+                                            <th class="px-4 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest w-[25%]">Proyecto</th>
+                                            <th class="px-3 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center w-[12%]">Categoría</th>
+                                            <th colspan="2" class="px-2 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center border-x border-slate-100/50 w-[18%]">Periodo (Sem/Año)</th>
+                                            <th class="px-4 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest w-[20%]">Evaluadores</th>
+                                            <th class="px-3 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center w-[12%]">Estado</th>
+                                            <th class="px-4 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center w-[13%] min-w-[110px]">Acciones</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="admin-projects-tbody">
-                                        <tr><td colspan="7" style="text-align:center; padding: 2rem; color: var(--text-secondary);">Cargando proyectos...</td></tr>
+                                    <tbody id="admin-projects-tbody" class="divide-y divide-slate-50">
+                                        <tr><td colspan="7" class="px-4 py-20 text-center text-slate-400 font-medium">Cargando proyectos...</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -105,225 +146,499 @@ function renderAdminDashboard() {
                     </div>
 
                     <!-- ===== POSTULACIONES TAB ===== -->
-                    <div id="admin-tab-postulaciones" style="display: none;">
-                        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                            <div>
-                                <h2 style="color: var(--text-primary); margin-bottom: 0.3rem;">Proyectos Postulados</h2>
-                                <p style="color: var(--text-secondary); font-size: 0.9rem;">Gestiona las postulaciones de estudiantes antes de la Rueda.</p>
-                            </div>
+                    <div id="admin-tab-postulaciones" class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 hidden">
+                        <header class="space-y-1">
+                            <h2 class="text-3xl font-black text-slate-800 tracking-tight">Proyectos Postulados</h2>
+                            <p class="text-slate-500 font-medium">Revisión y validación de nuevas propuestas enviadas por estudiantes.</p>
                         </header>
-                        <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
-                            <button class="btn btn-primary" id="pfbtn-todos" onclick="loadAdminPostulaciones('')" style="font-size:0.83rem;">Todos</button>
-                            <button class="btn btn-outline" id="pfbtn-pendiente" onclick="loadAdminPostulaciones('Pendiente de revisi\u00f3n')" style="font-size:0.83rem;">&#9203; Pendientes</button>
-                            <button class="btn btn-outline" id="pfbtn-revision" onclick="loadAdminPostulaciones('En revisi\u00f3n')" style="font-size:0.83rem;">&#128269; En revisi\u00f3n</button>
-                            <button class="btn btn-outline" id="pfbtn-aprobado" onclick="loadAdminPostulaciones('Aprobado')" style="font-size:0.83rem;">&#9989; Aprobados</button>
-                            <button class="btn btn-outline" id="pfbtn-noaprobado" onclick="loadAdminPostulaciones('No aprobado')" style="font-size:0.83rem;">&#10060; No aprobados</button>
+                        
+                        <div class="flex flex-wrap gap-3">
+                            ${renderFilterButton("pfbtn-todos", "Todos", "")}
+                            ${renderFilterButton("pfbtn-pendiente", "⌛ Pendientes", "Pendiente de revisión")}
+                            ${renderFilterButton("pfbtn-revision", "🔍 En revisión", "En revisión")}
+                            ${renderFilterButton("pfbtn-aprobado", "✅ Aprobados", "Aprobado")}
+                            ${renderFilterButton("pfbtn-noaprobado", "❌ No aprobados", "No aprobado")}
                         </div>
-                        <div class="card" style="padding: 0; overflow: hidden;">
-                            <div class="table-container">
-                                <table class="data-table">
+
+                        <div class="bg-surface rounded-[32px] shadow-premium border border-slate-100 overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse min-w-[800px]">
                                     <thead>
-                                        <tr>
-                                            <th>Proyecto</th>
-                                            <th>Estudiante</th>
-                                            <th>Categoría</th>
-                                            <th>Fecha</th>
-                                            <th>Estado</th>
-                                            <th style="text-align:right;">Acción</th>
+                                        <tr class="bg-slate-50/50">
+                                            <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Proyecto</th>
+                                            <th class="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Postulante</th>
+                                            <th class="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Categoría</th>
+                                            <th class="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Fecha</th>
+                                            <th class="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Estado</th>
+                                            <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Acciones</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="admin-postulaciones-tbody">
-                                        <tr><td colspan="6" style="text-align:center; padding: 2rem; color: var(--text-secondary);">Cargando...</td></tr>
+                                    <tbody id="admin-postulaciones-tbody" class="divide-y divide-slate-50">
+                                        <tr><td colspan="6" class="px-8 py-20 text-center text-slate-400 font-medium">Cargando...</td></tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
 
+                    </div>
                 </div>
             </main>
         </div>
-        
+        ${renderAdminModals()}
+    `;
+}
+
+function renderAdminModals() {
+    return `
         <!-- ===== CREATE USER MODAL ===== -->
-        <div id="create-user-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.55); z-index: 1000; justify-content: center; align-items: center;">
-            <div style="background: var(--bg-surface); padding: 2rem; border-radius: 16px; width: 100%; max-width: 480px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                    <h3 style="color: var(--text-primary); margin: 0;"><i class="fa-solid fa-user-plus" style="color: var(--primary-color);"></i> Crear Nuevo Usuario</h3>
-                    <button onclick="closeCreateUserModal()" style="background: none; border: none; cursor: pointer; color: var(--text-secondary); font-size: 1.2rem;"><i class="fa-solid fa-xmark"></i></button>
+        <div id="create-user-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[1000] hidden items-center justify-center p-4">
+            <div class="bg-surface w-full max-w-lg rounded-[32px] shadow-premium overflow-hidden animate-in zoom-in-95 duration-300">
+                <div class="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
+                            <i class="fa-solid fa-user-plus"></i>
+                        </div>
+                        <h3 class="text-xl font-black text-slate-800 tracking-tight">Nuevo Usuario</h3>
+                    </div>
+                    <button onclick="closeCreateUserModal()" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 transition-colors">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
                 </div>
-                <form id="create-user-form" onsubmit="handleCreateUser(event)" style="display: flex; flex-direction: column; gap: 1rem;">
-                    <div>
-                        <label style="display:block; margin-bottom:0.4rem; color:var(--text-primary); font-weight: 500; font-size: 0.9rem;">Nombre Completo</label>
-                        <input type="text" id="new-user-name" required placeholder="Ej. Carlos Martínez" style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-base); color: var(--text-primary);">
+                
+                <form id="create-user-form" onsubmit="handleCreateUser(event)" class="p-8 space-y-6">
+                    <div class="space-y-2">
+                        <label class="block text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Nombre Completo</label>
+                        <input type="text" id="new-user-name" required placeholder="Ej. Carlos Martínez" 
+                            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-slate-700 font-bold placeholder:text-slate-300 focus:ring-4 focus:ring-primary/10 outline-none transition-all">
                     </div>
-                    <div>
-                        <label style="display:block; margin-bottom:0.4rem; color:var(--text-primary); font-weight: 500; font-size: 0.9rem;">Correo Electrónico</label>
-                        <input type="email" id="new-user-email" required placeholder="correo@ejemplo.com" style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-base); color: var(--text-primary);">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label class="block text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Correo Electrónico</label>
+                            <input type="email" id="new-user-email" required placeholder="usuario@unipaz.edu.co" 
+                                oninput="validateAdminUserEmail('new')"
+                                class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-slate-700 font-bold placeholder:text-slate-300 focus:ring-4 focus:ring-primary/10 outline-none transition-all">
+                            <p id="new-user-email-hint" class="mt-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Solo @unipaz.edu.co</p>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Rol de Acceso</label>
+                            <div class="relative">
+                                <select id="new-user-role" required 
+                                    class="w-full pl-6 pr-12 py-4 bg-slate-50 border-none rounded-2xl text-slate-700 font-bold appearance-none focus:ring-4 focus:ring-primary/10 outline-none transition-all cursor-pointer">
+                                    <option value="docente">Docente</option>
+                                    <option value="estudiante">Estudiante</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label style="display:block; margin-bottom:0.4rem; color:var(--text-primary); font-weight: 500; font-size: 0.9rem;">Contraseña Provisional</label>
-                        <input type="password" id="new-user-password" required minlength="8" placeholder="Mínimo 8 caracteres" style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-base); color: var(--text-primary);">
+
+                    <div class="space-y-2">
+                        <label class="block text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Contraseña Provisional</label>
+                        <input type="password" id="new-user-password" required minlength="8" placeholder="Mínimo 8 caracteres" 
+                            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-slate-700 font-bold placeholder:text-slate-300 focus:ring-4 focus:ring-primary/10 outline-none transition-all">
                     </div>
-                    <div>
-                        <label style="display:block; margin-bottom:0.4rem; color:var(--text-primary); font-weight: 500; font-size: 0.9rem;">Rol</label>
-                        <select id="new-user-role" required style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-base); color: var(--text-primary);">
-                            <option value="docente">Docente Evaluador</option>
-                            <option value="estudiante">Estudiante</option>
-                        </select>
+
+                    <div id="create-user-error" class="hidden p-4 bg-red-50 text-status-danger rounded-2xl font-bold text-sm border border-red-100 items-center gap-3 animate-in fade-in duration-300">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <span id="create-user-error-text"></span>
                     </div>
-                    <div id="create-user-error" style="color: var(--status-danger); display:none; font-size: 0.9rem; background: #FEE2E2; padding: 0.75rem; border-radius: 6px; margin-top: 0.25rem;"></div>
-                    <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
-                        <button type="button" class="btn btn-outline" onclick="closeCreateUserModal()" style="flex: 1;">Cancelar</button>
-                        <button type="submit" class="btn btn-primary" id="btn-create-user" style="flex: 1;">Crear Usuario</button>
+
+                    <div class="flex gap-4 pt-4">
+                        <button type="button" onclick="closeCreateUserModal()" 
+                            class="flex-1 px-8 py-4 rounded-2xl font-bold text-slate-500 hover:bg-slate-50 transition-all border border-slate-100">
+                            Cancelar
+                        </button>
+                        <button type="submit" id="btn-create-user" 
+                            class="flex-[1.5] bg-primary text-white font-black px-8 py-4 rounded-2xl hover:bg-primary-dark shadow-xl shadow-primary/20 transition-all transform hover:-translate-y-1 active:scale-95">
+                            Crear Usuario
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
+
         <!-- ===== EDIT USER MODAL ===== -->
-        <div id="edit-user-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.55); z-index: 1000; justify-content: center; align-items: center;">
-            <div style="background: var(--bg-surface); padding: 2rem; border-radius: 16px; width: 100%; max-width: 480px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                    <h3 style="color: var(--text-primary); margin: 0;"><i class="fa-solid fa-user-pen" style="color: var(--primary-color);"></i> Editar Usuario</h3>
-                    <button onclick="closeEditUserModal()" style="background: none; border: none; cursor: pointer; color: var(--text-secondary); font-size: 1.2rem;"><i class="fa-solid fa-xmark"></i></button>
+        <div id="edit-user-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[1000] hidden items-center justify-center p-4">
+            <div class="bg-surface w-full max-w-lg rounded-[32px] shadow-premium overflow-hidden animate-in zoom-in-95 duration-300">
+                <div class="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
+                            <i class="fa-solid fa-user-pen"></i>
+                        </div>
+                        <h3 class="text-xl font-black text-slate-800 tracking-tight">Editar Usuario</h3>
+                    </div>
+                    <button onclick="closeEditUserModal()" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 transition-colors">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
                 </div>
-                <form id="edit-user-form" onsubmit="handleEditUser(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+                
+                <form id="edit-user-form" onsubmit="handleEditUser(event)" class="p-8 space-y-6">
                     <input type="hidden" id="edit-user-id">
-                    <div>
-                        <label style="display:block; margin-bottom:0.4rem; color:var(--text-primary); font-weight: 500; font-size: 0.9rem;">Nombre Completo</label>
-                        <input type="text" id="edit-user-name" required style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-base); color: var(--text-primary);">
+                    
+                    <div class="space-y-2">
+                        <label class="block text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Nombre Completo</label>
+                        <input type="text" id="edit-user-name" required 
+                            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-slate-700 font-bold focus:ring-4 focus:ring-primary/10 outline-none transition-all">
                     </div>
-                    <div>
-                        <label style="display:block; margin-bottom:0.4rem; color:var(--text-primary); font-weight: 500; font-size: 0.9rem;">Nuevo Correo Electrónico (Opcional)</label>
-                        <input type="email" id="edit-user-email" placeholder="Dejar en blanco para no cambiar" style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-base); color: var(--text-primary);">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label class="block text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Correo (Opcional)</label>
+                            <input type="email" id="edit-user-email" placeholder="usuario@unipaz.edu.co" 
+                                oninput="validateAdminUserEmail('edit')"
+                                class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-slate-700 font-bold placeholder:text-slate-300 focus:ring-4 focus:ring-primary/10 outline-none transition-all">
+                            <p id="edit-user-email-hint" class="mt-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Solo @unipaz.edu.co</p>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Rol</label>
+                            <div class="relative">
+                                <select id="edit-user-role" required 
+                                    class="w-full pl-6 pr-12 py-4 bg-slate-50 border-none rounded-2xl text-slate-700 font-bold appearance-none focus:ring-4 focus:ring-primary/10 outline-none transition-all cursor-pointer">
+                                    <option value="docente">Docente</option>
+                                    <option value="estudiante">Estudiante</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label style="display:block; margin-bottom:0.4rem; color:var(--text-primary); font-weight: 500; font-size: 0.9rem;">Nueva Contraseña (Opcional)</label>
-                        <input type="password" id="edit-user-password" minlength="8" placeholder="Dejar en blanco para no cambiar" style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-base); color: var(--text-primary);">
+
+                    <div class="space-y-2">
+                        <label class="block text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Nueva Contraseña (Opcional)</label>
+                        <input type="password" id="edit-user-password" minlength="8" placeholder="Espacio para no cambiar" 
+                            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-slate-700 font-bold placeholder:text-slate-300 focus:ring-4 focus:ring-primary/10 outline-none transition-all">
                     </div>
-                    <div>
-                        <label style="display:block; margin-bottom:0.4rem; color:var(--text-primary); font-weight: 500; font-size: 0.9rem;">Rol</label>
-                        <select id="edit-user-role" required style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-base); color: var(--text-primary);">
-                            <option value="docente">Docente Evaluador</option>
-                            <option value="estudiante">Estudiante</option>
-                        </select>
+
+                    <div id="edit-user-error" class="hidden p-4 bg-red-50 text-status-danger rounded-2xl font-bold text-sm border border-red-100 items-center gap-3 animate-in fade-in duration-300">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <span id="edit-user-error-text"></span>
                     </div>
-                    <div id="edit-user-error" style="color: var(--status-danger); display:none; font-size: 0.9rem; background: #FEE2E2; padding: 0.75rem; border-radius: 6px; margin-top: 0.25rem;"></div>
-                    <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
-                        <button type="button" class="btn btn-outline" onclick="closeEditUserModal()" style="flex: 1;">Cancelar</button>
-                        <button type="submit" class="btn btn-primary" id="btn-edit-user" style="flex: 1;">Guardar Cambios</button>
+
+                    <div class="flex gap-4 pt-4">
+                        <button type="button" onclick="closeEditUserModal()" 
+                            class="flex-1 px-8 py-4 rounded-2xl font-bold text-slate-500 hover:bg-slate-50 transition-all border border-slate-100">
+                            Cancelar
+                        </button>
+                        <button type="submit" id="btn-edit-user" 
+                            class="flex-[1.5] bg-primary text-white font-black px-8 py-4 rounded-2xl hover:bg-primary-dark shadow-xl shadow-primary/20 transition-all transform hover:-translate-y-1 active:scale-95">
+                            Guardar Cambios
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
 
         <!-- ===== DELETE USER CONFIRM MODAL ===== -->
-        <div id="delete-user-confirm-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.55); z-index: 1000; justify-content: center; align-items: center;">
-            <div style="background: var(--bg-surface); padding: 2.5rem 2rem; border-radius: 16px; width: 100%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center;">
-                <i class="fa-solid fa-triangle-exclamation" style="font-size: 3.5rem; color: var(--status-danger); margin-bottom: 1.5rem;"></i>
-                <h3 style="color: var(--text-primary); margin-bottom: 1rem; font-size: 1.5rem;">Confirmar Eliminación</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 2rem; line-height: 1.6;">¿Estás seguro de que deseas eliminar a este usuario de forma permanente? Por motivos de seguridad, toma en cuenta que esta acción <strong>no se puede deshacer</strong> y eliminará todos sus datos asociados.</p>
+        <div id="delete-user-confirm-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[1000] hidden items-center justify-center p-4">
+            <div class="bg-surface w-full max-w-sm rounded-[32px] shadow-premium overflow-hidden animate-in zoom-in-95 duration-300 p-8 text-center space-y-6">
+                <div class="w-20 h-20 bg-red-50 text-status-danger rounded-3xl flex items-center justify-center mx-auto mb-2">
+                    <i class="fa-solid fa-triangle-exclamation text-3xl"></i>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="text-2xl font-black text-slate-800">¿Estás seguro?</h3>
+                    <p class="text-slate-500 font-medium leading-relaxed px-2">Esta acción eliminará permanentemente al usuario y sus datos asociados. No se puede deshacer.</p>
+                </div>
                 <input type="hidden" id="delete-user-id-target">
-                <div style="display: flex; gap: 1rem;">
-                    <button type="button" class="btn btn-outline" onclick="closeDeleteUserConfirm()" style="flex: 1;">Cancelar</button>
-                    <button type="button" class="btn btn-primary" onclick="confirmDeleteUser()" style="flex: 1; background-color: var(--status-danger); border-color: var(--status-danger);">Sí, Eliminar</button>
+                <div class="flex flex-col gap-3 pt-2">
+                    <button type="button" onclick="confirmDeleteUser()" 
+                        class="w-full bg-status-danger text-white font-black px-8 py-4 rounded-2xl hover:bg-red-700 shadow-xl shadow-red-200 transition-all transform hover:-translate-y-1 active:scale-95">
+                        Sí, Eliminar Usuario
+                    </button>
+                    <button type="button" onclick="closeDeleteUserConfirm()" 
+                        class="w-full px-8 py-4 rounded-2xl font-bold text-slate-400 hover:bg-slate-50 transition-all">
+                        No, Cancelar
+                    </button>
                 </div>
             </div>
         </div>
 
         <!-- ===== CREATE PROJECT MODAL ===== -->
-        <div id="create-project-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.55); z-index: 1000; justify-content: center; align-items: center;">
-            <div style="background: var(--bg-surface); padding: 2rem; border-radius: 16px; width: 100%; max-width: 480px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                    <h3 style="color: var(--text-primary); margin: 0;"><i class="fa-solid fa-folder-plus" style="color: var(--primary-color);"></i> Registrar Proyecto</h3>
-                    <button onclick="closeCreateProjectModal()" style="background: none; border: none; cursor: pointer; color: var(--text-secondary); font-size: 1.2rem;"><i class="fa-solid fa-xmark"></i></button>
+        <div id="create-project-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[1000] hidden items-center justify-center p-4">
+            <div class="bg-surface w-full max-w-2xl rounded-[32px] shadow-premium overflow-hidden animate-in zoom-in-95 duration-300">
+                <div class="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
+                            <i class="fa-solid fa-folder-plus"></i>
+                        </div>
+                        <h3 class="text-xl font-black text-slate-800 tracking-tight">Registrar Proyecto</h3>
+                    </div>
+                    <button onclick="closeCreateProjectModal()" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 transition-colors">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
                 </div>
-                <form id="create-project-form" onsubmit="handleCreateProject(event)" style="display: flex; flex-direction: column; gap: 1rem;">
-                    <div>
-                        <label style="display:block; margin-bottom:0.4rem; color:var(--text-primary); font-weight: 500; font-size: 0.9rem;">Nombre del Proyecto</label>
-                        <input type="text" id="new-project-name" required placeholder="Ej. Sistema IoT para Invernaderos" style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-base); color: var(--text-primary);">
+                
+                <form id="create-project-form" onsubmit="handleCreateProject(event)" class="p-8 space-y-6 max-h-[75vh] overflow-y-auto custom-scrollbar">
+                    <div class="space-y-2">
+                        <label class="block text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Nombre del Proyecto</label>
+                        <input type="text" id="new-project-name" required placeholder="Ej. Sistema IoT..." 
+                            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-slate-700 font-bold focus:ring-4 focus:ring-primary/10 outline-none transition-all">
                     </div>
-                    <div>
-                        <label style="display:block; margin-bottom:0.4rem; color:var(--text-primary); font-weight: 500; font-size: 0.9rem;">Categoría</label>
-                        <select id="new-project-cat" required style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-base); color: var(--text-primary);">
-                            <option value="Desarrollo">Desarrollo</option>
-                            <option value="Propuesta">Propuesta</option>
-                            <option value="Aplicación">Aplicación</option>
-                        </select>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                        <div>
-                            <label style="display:block; margin-bottom:0.4rem; color:var(--text-primary); font-weight: 500; font-size: 0.9rem;">Semestre</label>
-                            <select id="new-project-sem" required style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-base); color: var(--text-primary);">
-                                <option value="1">1 (Primer Semestre)</option>
-                                <option value="2">2 (Segundo Semestre)</option>
-                            </select>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="space-y-2">
+                            <label class="block text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Categoría</label>
+                            <div class="relative">
+                                <select id="new-project-cat" required 
+                                    class="w-full pl-6 pr-12 py-4 bg-slate-50 border-none rounded-2xl text-slate-700 font-bold appearance-none focus:ring-4 focus:ring-primary/10 outline-none transition-all cursor-pointer">
+                                    <option value="Desarrollo">Desarrollo</option>
+                                    <option value="Propuesta">Propuesta</option>
+                                    <option value="Aplicación">Aplicación</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                            </div>
                         </div>
-                        <div>
-                            <label style="display:block; margin-bottom:0.4rem; color:var(--text-primary); font-weight: 500; font-size: 0.9rem;">Año</label>
-                            <input type="number" id="new-project-year" required value="2026" min="2020" max="2035" style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-base); color: var(--text-primary);">
+                        <div class="space-y-2">
+                            <label class="block text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Semestre</label>
+                            <div class="relative">
+                                <select id="new-project-sem" required 
+                                    class="w-full pl-6 pr-12 py-4 bg-slate-50 border-none rounded-2xl text-slate-700 font-bold appearance-none focus:ring-4 focus:ring-primary/10 outline-none transition-all cursor-pointer">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Año Lectivo</label>
+                            <input type="number" id="new-project-year" required min="2020" max="2035" value="${new Date().getFullYear()}" 
+                                class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-slate-700 font-bold focus:ring-4 focus:ring-primary/10 outline-none transition-all">
                         </div>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-top: 0.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
-                        <div>
-                            <label style="display:block; margin-bottom:0.4rem; color:var(--text-primary); font-weight: 500; font-size: 0.9rem;">Evaluador 1</label>
-                            <select id="new-project-evaluator-1" onchange="updateEvaluatorDropdowns()" style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-surface); color: var(--text-primary);">
+
+                    <div class="p-6 bg-slate-50 rounded-[32px] space-y-4">
+                        <label class="block text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Asignar Evaluadores</label>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="relative">
+                                <select id="new-project-evaluator-1" onchange="updateEvaluatorDropdowns()" 
+                                    class="w-full pl-4 pr-10 py-3 bg-white border border-slate-200 rounded-xl text-slate-600 font-bold text-sm appearance-none focus:ring-4 focus:ring-primary/10 outline-none transition-all">
+                                    <option value="">-- Sin asignar --</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none text-[10px]"></i>
+                            </div>
+                            <div class="relative">
+                                <select id="new-project-evaluator-2" onchange="updateEvaluatorDropdowns()" 
+                                    class="w-full pl-4 pr-10 py-3 bg-white border border-slate-200 rounded-xl text-slate-600 font-bold text-sm appearance-none focus:ring-4 focus:ring-primary/10 outline-none transition-all">
+                                    <option value="">-- Sin asignar --</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none text-[10px]"></i>
+                            </div>
+                            <div class="relative">
+                                <select id="new-project-evaluator-3" onchange="updateEvaluatorDropdowns()" 
+                                    class="w-full pl-4 pr-10 py-3 bg-white border border-slate-200 rounded-xl text-slate-600 font-bold text-sm appearance-none focus:ring-4 focus:ring-primary/10 outline-none transition-all">
+                                    <option value="">-- Sin asignar --</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none text-[10px]"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Estudiante Responsable (Autor)</label>
+                        <div class="relative">
+                            <select id="new-project-student" 
+                                class="w-full pl-6 pr-12 py-4 bg-slate-50 border-none rounded-2xl text-slate-700 font-bold appearance-none focus:ring-4 focus:ring-primary/10 outline-none transition-all cursor-pointer">
                                 <option value="">-- Sin asignar --</option>
                             </select>
-                        </div>
-                        <div>
-                            <label style="display:block; margin-bottom:0.4rem; color:var(--text-primary); font-weight: 500; font-size: 0.9rem;">Evaluador 2</label>
-                            <select id="new-project-evaluator-2" onchange="updateEvaluatorDropdowns()" style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-surface); color: var(--text-primary);">
-                                <option value="">-- Sin asignar --</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label style="display:block; margin-bottom:0.4rem; color:var(--text-primary); font-weight: 500; font-size: 0.9rem;">Evaluador 3</label>
-                            <select id="new-project-evaluator-3" onchange="updateEvaluatorDropdowns()" style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-surface); color: var(--text-primary);">
-                                <option value="">-- Sin asignar --</option>
-                            </select>
+                            <i class="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
                         </div>
                     </div>
-                    
-                    <div style="margin-top: 0.5rem;">
-                        <label style="display:block; margin-bottom:0.4rem; color:var(--text-primary); font-weight: 500; font-size: 0.9rem;">Asignar Estudiante (opcional)</label>
-                        <select id="new-project-student" style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-surface); color: var(--text-primary);">
-                            <option value="">-- Sin asignar --</option>
-                        </select>
-                        <small style="color: var(--text-secondary); display: block; margin-top: 0.3rem;">Autor del proyecto</small>
+
+                    <div id="create-project-error" class="hidden p-4 bg-red-50 text-status-danger rounded-2xl font-bold text-sm border border-red-100 items-center gap-3 animate-in fade-in duration-300">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <span id="create-project-error-text"></span>
                     </div>
-                    <div id="create-project-error" style="color: var(--status-danger); display:none; font-size: 0.9rem; background: #FEE2E2; padding: 0.75rem; border-radius: 6px; margin-top: 0.25rem;"></div>
-                    <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
-                        <button type="button" class="btn btn-outline" onclick="closeCreateProjectModal()" style="flex: 1;">Cancelar</button>
-                        <button type="submit" class="btn btn-primary" id="btn-create-project" style="flex: 1;">Registrar Proyecto</button>
+
+                    <div class="flex gap-4 pt-2">
+                        <button type="button" onclick="closeCreateProjectModal()" 
+                            class="flex-1 px-8 py-4 rounded-2xl font-bold text-slate-500 hover:bg-slate-50 transition-all border border-slate-100">
+                            Cancelar
+                        </button>
+                        <button type="submit" id="btn-create-project" 
+                            class="flex-[1.5] bg-primary text-white font-black px-8 py-4 rounded-2xl hover:bg-primary-dark shadow-xl shadow-primary/20 transition-all transform hover:-translate-y-1 active:scale-95">
+                            Crear Proyecto
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ===== EDIT PROJECT MODAL ===== -->
+        <div id="edit-project-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[1000] hidden items-center justify-center p-4">
+            <div class="bg-surface w-full max-w-2xl rounded-[32px] shadow-premium overflow-hidden animate-in zoom-in-95 duration-300">
+                <div class="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
+                            <i class="fa-solid fa-pen"></i>
+                        </div>
+                        <h3 class="text-xl font-black text-slate-800 tracking-tight">Editar Proyecto</h3>
+                    </div>
+                    <button onclick="closeEditProjectModal()" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 transition-colors">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                
+                <form id="edit-project-form" onsubmit="handleEditProject(event)" class="p-8 space-y-6 max-h-[75vh] overflow-y-auto custom-scrollbar">
+                    <input type="hidden" id="edit-proj-id">
+                    <div class="space-y-2">
+                        <label class="block text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Nombre del Proyecto</label>
+                        <input type="text" id="edit-proj-nombre" required 
+                            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-slate-700 font-bold focus:ring-4 focus:ring-primary/10 outline-none transition-all">
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="space-y-2">
+                            <label class="block text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Categoría</label>
+                            <div class="relative">
+                                <select id="edit-proj-cat" required 
+                                    class="w-full pl-6 pr-12 py-4 bg-slate-50 border-none rounded-2xl text-slate-700 font-bold appearance-none focus:ring-4 focus:ring-primary/10 outline-none transition-all cursor-pointer">
+                                    <option value="Desarrollo">Desarrollo</option>
+                                    <option value="Propuesta">Propuesta</option>
+                                    <option value="Aplicación">Aplicación</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Semestre</label>
+                            <div class="relative">
+                                <select id="edit-proj-sem" required 
+                                    class="w-full pl-6 pr-12 py-4 bg-slate-50 border-none rounded-2xl text-slate-700 font-bold appearance-none focus:ring-4 focus:ring-primary/10 outline-none transition-all cursor-pointer">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Año Lectivo</label>
+                            <input type="number" id="edit-proj-year" required min="2020" max="2035" 
+                                class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-slate-700 font-bold focus:ring-4 focus:ring-primary/10 outline-none transition-all">
+                        </div>
+                    </div>
+
+                    <div class="p-6 bg-slate-50 rounded-[32px] space-y-4">
+                        <label class="block text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Actualizar Evaluadores</label>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="relative">
+                                <select id="edit-proj-ev1" 
+                                    class="w-full pl-4 pr-10 py-3 bg-white border border-slate-200 rounded-xl text-slate-600 font-bold text-sm appearance-none focus:ring-4 focus:ring-primary/10 outline-none transition-all">
+                                    <option value="">-- Ninguno --</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none text-[10px]"></i>
+                            </div>
+                            <div class="relative">
+                                <select id="edit-proj-ev2" 
+                                    class="w-full pl-4 pr-10 py-3 bg-white border border-slate-200 rounded-xl text-slate-600 font-bold text-sm appearance-none focus:ring-4 focus:ring-primary/10 outline-none transition-all">
+                                    <option value="">-- Ninguno --</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none text-[10px]"></i>
+                            </div>
+                            <div class="relative">
+                                <select id="edit-proj-ev3" 
+                                    class="w-full pl-4 pr-10 py-3 bg-white border border-slate-200 rounded-xl text-slate-600 font-bold text-sm appearance-none focus:ring-4 focus:ring-primary/10 outline-none transition-all">
+                                    <option value="">-- Ninguno --</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none text-[10px]"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Estudiante Asignado</label>
+                        <div class="relative">
+                            <select id="edit-proj-student" 
+                                class="w-full pl-6 pr-12 py-4 bg-slate-50 border-none rounded-2xl text-slate-700 font-bold appearance-none focus:ring-4 focus:ring-primary/10 outline-none transition-all cursor-pointer">
+                                <option value="">-- Sin asignar --</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                        </div>
+                    </div>
+
+                    <div id="edit-proj-error" class="hidden p-4 bg-red-50 text-status-danger rounded-2xl font-bold text-sm border border-red-100 items-center gap-3 animate-in fade-in duration-300">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <span id="edit-proj-error-text"></span>
+                    </div>
+
+                    <div class="flex gap-4 pt-2">
+                        <button type="button" onclick="closeEditProjectModal()" 
+                            class="flex-1 px-8 py-4 rounded-2xl font-bold text-slate-500 hover:bg-slate-50 transition-all border border-slate-100">
+                            Cancelar
+                        </button>
+                        <button type="submit" id="btn-edit-project" 
+                            class="flex-[1.5] bg-primary text-white font-black px-8 py-4 rounded-2xl hover:bg-primary-dark shadow-xl shadow-primary/20 transition-all transform hover:-translate-y-1 active:scale-95">
+                            Guardar Cambios
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
 
         <!-- ===== GESTIONAR POSTULACION MODAL ===== -->
-        <div id="gestionar-post-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.55); z-index:1000; justify-content:center; align-items:center;">
-            <div style="background:var(--bg-surface); padding:2rem; border-radius:16px; width:100%; max-width:560px; box-shadow:0 20px 60px rgba(0,0,0,0.3); max-height:90vh; overflow-y:auto;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-                    <h3 style="color:var(--text-primary); margin:0;"><i class="fa-solid fa-inbox" style="color:var(--primary-color);"></i> Gestionar Postulación</h3>
-                    <button onclick="cerrarGestionarPost()" style="background:none; border:none; cursor:pointer; color:var(--text-secondary); font-size:1.2rem;"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <div id="gpost-details" style="margin-bottom:1.5rem;"></div>
-                <div style="border-top:1px solid var(--border-color); padding-top:1.5rem;">
-                    <h4 style="color:var(--text-primary); margin-bottom:1rem;"><i class="fa-solid fa-user-tie"></i> Asignar Docente Revisor</h4>
-                    <div style="display:flex; gap:0.75rem;">
-                        <select id="gpost-select-docente" style="flex:1; padding:0.8rem; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-base); color:var(--text-primary);">
-                            <option value="">-- Selecciona un docente --</option>
-                        </select>
-                        <button class="btn btn-primary" onclick="handleAsignarRevisor()" style="white-space:nowrap;"><i class="fa-solid fa-user-plus"></i> Asignar</button>
+        <div id="gestionar-post-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[1000] hidden items-center justify-center p-4">
+            <div class="bg-surface w-full max-w-xl rounded-[32px] shadow-premium overflow-hidden animate-in zoom-in-95 duration-300">
+                <div class="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
+                            <i class="fa-solid fa-inbox"></i>
+                        </div>
+                        <h3 class="text-xl font-black text-slate-800 tracking-tight">Gestionar Postulación</h3>
                     </div>
-                    <div id="gpost-error" style="display:none; color:var(--status-danger); background:#FEE2E2; padding:0.75rem; border-radius:6px; margin-top:0.75rem; font-size:0.9rem;"></div>
-                    <div id="gpost-ok" style="display:none; color:#065f46; background:#D1FAE5; padding:0.75rem; border-radius:6px; margin-top:0.75rem; font-size:0.9rem;"></div>
+                    <button onclick="cerrarGestionarPost()" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 transition-colors">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                
+                <div class="p-8 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                    <div id="gpost-details" class="space-y-6">
+                        <!-- Populated dynamically -->
+                    </div>
+
+                    <div class="pt-8 border-t border-slate-100 space-y-6">
+                        <div class="flex items-center gap-3">
+                             <div class="w-8 h-8 bg-slate-100 text-slate-500 rounded-lg flex items-center justify-center text-xs">
+                                <i class="fa-solid fa-user-tie"></i>
+                            </div>
+                            <h4 class="font-black text-slate-800 tracking-tight">Asignar Docente Revisor</h4>
+                        </div>
+                        
+                        <div class="flex gap-3">
+                            <div class="relative flex-1">
+                                <select id="gpost-select-docente" 
+                                    class="w-full pl-6 pr-12 py-4 bg-slate-50 border-none rounded-2xl text-slate-700 font-bold appearance-none focus:ring-4 focus:ring-primary/10 outline-none transition-all cursor-pointer">
+                                    <option value="">-- Selecciona un docente --</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                            </div>
+                            <button onclick="handleAsignarRevisor()" 
+                                class="px-8 py-4 bg-primary text-white font-black rounded-2xl hover:bg-primary-dark shadow-lg shadow-primary/20 transition-all transform active:scale-95 whitespace-nowrap">
+                                Asignar
+                            </button>
+                        </div>
+
+                        <div id="gpost-error" class="hidden p-4 bg-red-50 text-status-danger rounded-2xl font-bold text-sm border border-red-100 items-center gap-3 animate-in fade-in duration-300">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <span id="gpost-error-text"></span>
+                        </div>
+                        <div id="gpost-ok" class="hidden p-4 bg-emerald-50 text-status-success rounded-2xl font-bold text-sm border border-emerald-100 items-center gap-3 animate-in fade-in duration-300">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>Asignado correctamente</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     `;
 }
 
+function renderFilterButton(id, label, filter) {
+    return `
+        <button id="${id}" onclick="loadAdminPostulaciones('${filter}')" 
+            class="px-5 py-2.5 rounded-xl border border-slate-100 bg-surface text-slate-500 font-bold text-sm hover:border-primary hover:text-primary transition-all shadow-sm active:scale-95">
+            ${label}
+        </button>
+    `;
+}
 // --- ADMIN DASHBOARD LOGIC ---
 
 let adminUsersCache = [];
@@ -339,11 +654,11 @@ async function loadAdminUsers() {
             .order('created_at', { ascending: false });
             
         if(error) throw error;
-        adminUsersCache = data;
-        renderAdminUsersTable(data);
+        adminUsersCache = data || [];
+        renderAdminUsersTable(adminUsersCache);
     } catch (e) {
         console.error("loadAdminUsers Error:", e);
-        if(tbody) tbody.innerHTML = `<tr><td colspan="4" style="color:red; text-align:center;">Ocurrió un error al cargar los usuarios.</td></tr>`;
+        if(tbody) tbody.innerHTML = `<tr><td colspan="4" class="px-8 py-20 text-center text-status-danger font-bold text-sm bg-red-50/50 rounded-2xl">Ocurrió un error al cargar los usuarios públicos.</td></tr>`;
     }
 }
 
@@ -351,25 +666,42 @@ function renderAdminUsersTable(users) {
     const tbody = document.getElementById('admin-users-tbody');
     if(!tbody) return;
     
-    if(users.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No hay usuarios registrados.</td></tr>`;
+    if(!users || users.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="px-8 py-20 text-center text-slate-400 font-medium">No se encontraron usuarios</td></tr>`;
         return;
     }
     
     tbody.innerHTML = users.map(user => {
         const date = new Date(user.created_at).toLocaleDateString();
-        const badgeClass = user.rol === 'admin' ? 'badge-danger' : 
-                          (user.rol === 'docente' ? 'badge-info' : 'badge-success');
+        const badgeClass = user.rol === 'admin' ? 'bg-red-50 text-status-danger border-red-100' : 
+                          (user.rol === 'docente' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-emerald-50 text-status-success border-emerald-100');
                           
         return `
-            <tr>
-                <td><strong>${escapeHTML(user.nombre)}</strong></td>
-                <td><span class="badge ${badgeClass}">${escapeHTML(user.rol)}</span></td>
-                <td>${date}</td>
-                <td style="text-align: right;">
+            <tr class="hover:bg-slate-50/50 transition-colors group">
+                <td class="px-8 py-5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 font-black text-xs group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                            ${user.nombre.charAt(0)}
+                        </div>
+                        <span class="font-bold text-slate-700">${escapeHTML(user.nombre)}</span>
+                    </div>
+                </td>
+                <td class="px-8 py-5 text-center">
+                    <span class="inline-flex items-center px-4 py-1 rounded-full border text-[10px] font-black uppercase tracking-widest ${badgeClass}">
+                        ${escapeHTML(user.rol)}
+                    </span>
+                </td>
+                <td class="px-8 py-5 text-slate-500 font-medium text-sm">${date}</td>
+                <td class="px-8 py-5 text-right">
                     ${user.rol !== 'admin' ? `
-                    <button class="btn btn-outline" onclick="openEditUserModal('${user.id}')" style="padding: 0.3rem 0.6rem; color: var(--text-primary); border-color: var(--border-color); margin-right: 0.5rem;" title="Editar Usuario"><i class="fa-solid fa-pen"></i></button>
-                    <button class="btn btn-outline" onclick="showDeleteUserConfirm('${user.id}')" style="padding: 0.3rem 0.6rem; color: var(--status-danger); border-color: var(--status-danger);" title="Eliminar Usuario"><i class="fa-solid fa-trash"></i></button>
+                    <div class="flex items-center justify-center gap-2 transition-opacity">
+                        <button onclick="openEditUserModal('${user.id}')" class="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:bg-primary-dark hover:text-white transition-all shadow-sm" title="Editar">
+                            <i class="fa-solid fa-pen text-xs"></i>
+                        </button>
+                        <button onclick="showDeleteUserConfirm('${user.id}')" class="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 text-status-danger hover:bg-status-danger hover:text-white transition-all shadow-sm" title="Eliminar">
+                            <i class="fa-solid fa-trash text-xs"></i>
+                        </button>
+                    </div>
                     ` : ''}
                 </td>
             </tr>
@@ -395,13 +727,19 @@ function filterAdminUsers() {
 }
 
 function showCreateUserModal() {
-    document.getElementById('create-user-modal').style.display = 'flex';
+    const modal = document.getElementById('create-user-modal');
+    if(modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
 }
 
 function closeCreateUserModal() {
-    document.getElementById('create-user-modal').style.display = 'none';
+    const modal = document.getElementById('create-user-modal');
+    if(modal) modal.classList.add('hidden');
     document.getElementById('create-user-form').reset();
-    document.getElementById('create-user-error').style.display = 'none';
+    const err = document.getElementById('create-user-error');
+    if(err) err.classList.add('hidden');
 }
 
 async function handleCreateUser(e) {
@@ -412,12 +750,24 @@ async function handleCreateUser(e) {
     const errObj = document.getElementById('create-user-error');
     btn.disabled = true;
     btn.textContent = 'Creando...';
-    errObj.style.display = 'none';
+    if(errObj) errObj.classList.add('hidden');
     
+    const email = document.getElementById('new-user-email').value.trim();
+    if (!validateUnipazEmail(email)) {
+        if(errObj) {
+            errObj.textContent = "El correo debe ser institucional (@unipaz.edu.co).";
+            errObj.classList.remove('hidden');
+            errObj.classList.add('flex');
+        }
+        btn.disabled = false;
+        btn.textContent = 'Crear Usuario';
+        return;
+    }
+
     const payload = {
         action: 'createUser',
         nombre: escapeHTML(document.getElementById('new-user-name').value.trim()),
-        email: document.getElementById('new-user-email').value.trim(), // email field is validated by input type=email
+        email: email, 
         password: document.getElementById('new-user-password').value,
         rol: escapeHTML(document.getElementById('new-user-role').value)
     };
@@ -445,8 +795,12 @@ async function handleCreateUser(e) {
         loadAdminUsers();
     } catch (err) {
         console.error("handleCreateUser Error:", err);
-        errObj.textContent = "Ocurrió un error al crear el usuario. Verifique los datos.";
-        errObj.style.display = 'block';
+        const errText = document.getElementById('create-user-error-text');
+        if(errText) errText.textContent = "Ocurrió un error al crear el usuario. Verifique los datos.";
+        if(errObj) {
+            errObj.classList.remove('hidden');
+            errObj.classList.add('flex');
+        }
     } finally {
         btn.disabled = false;
         btn.textContent = 'Crear Usuario';
@@ -464,12 +818,18 @@ function openEditUserModal(userId) {
     document.getElementById('edit-user-password').value = '';
     document.getElementById('edit-user-role').value = user.rol;
     
-    document.getElementById('edit-user-error').style.display = 'none';
-    document.getElementById('edit-user-modal').style.display = 'flex';
+    const err = document.getElementById('edit-user-error');
+    if(err) err.classList.add('hidden');
+    const modal = document.getElementById('edit-user-modal');
+    if(modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
 }
 
 function closeEditUserModal() {
-    document.getElementById('edit-user-modal').style.display = 'none';
+    const modal = document.getElementById('edit-user-modal');
+    if(modal) modal.classList.add('hidden');
     document.getElementById('edit-user-form').reset();
 }
 
@@ -481,13 +841,25 @@ async function handleEditUser(e) {
     const errObj = document.getElementById('edit-user-error');
     btn.disabled = true;
     btn.textContent = 'Guardando...';
-    errObj.style.display = 'none';
+    if(errObj) errObj.classList.add('hidden');
     
+    const email = document.getElementById('edit-user-email').value.trim();
+    if (email && !validateUnipazEmail(email)) {
+        if(errObj) {
+            errObj.textContent = "El correo debe ser institucional (@unipaz.edu.co).";
+            errObj.classList.remove('hidden');
+            errObj.classList.add('flex');
+        }
+        btn.disabled = false;
+        btn.textContent = 'Guardar Cambios';
+        return;
+    }
+
     const payload = {
         action: 'editUser',
         userId: document.getElementById('edit-user-id').value,
         nombre: escapeHTML(document.getElementById('edit-user-name').value.trim()),
-        email: document.getElementById('edit-user-email').value.trim() || undefined,
+        email: email || undefined,
         password: document.getElementById('edit-user-password').value || undefined,
         rol: escapeHTML(document.getElementById('edit-user-role').value)
     };
@@ -514,8 +886,12 @@ async function handleEditUser(e) {
         loadAdminUsers();
     } catch (err) {
         console.error("handleEditUser Error:", err);
-        errObj.textContent = "Ocurrió un error al guardar los cambios.";
-        errObj.style.display = 'block';
+        const errText = document.getElementById('edit-user-error-text');
+        if(errText) errText.textContent = "Ocurrió un error al guardar los cambios.";
+        if(errObj) {
+            errObj.classList.remove('hidden');
+            errObj.classList.add('flex');
+        }
     } finally {
         btn.disabled = false;
         btn.textContent = 'Guardar Cambios';
@@ -525,11 +901,16 @@ async function handleEditUser(e) {
 // DELETE USER
 function showDeleteUserConfirm(userId) {
     document.getElementById('delete-user-id-target').value = userId;
-    document.getElementById('delete-user-confirm-modal').style.display = 'flex';
+    const modal = document.getElementById('delete-user-confirm-modal');
+    if(modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
 }
 
 function closeDeleteUserConfirm() {
-    document.getElementById('delete-user-confirm-modal').style.display = 'none';
+    const modal = document.getElementById('delete-user-confirm-modal');
+    if(modal) modal.classList.add('hidden');
 }
 
 async function confirmDeleteUser() {
@@ -569,10 +950,10 @@ function adminShowTab(tab) {
     tabs.forEach(t => {
         const el = document.getElementById(`admin-tab-${t}`);
         const sb = document.getElementById(`sb-${t}`);
-        if (el) el.style.display = (t === tab) ? '' : 'none';
+        if (el) el.classList.toggle('hidden', t !== tab);
         if (sb) {
-            if (t === tab) sb.classList.add('active');
-            else sb.classList.remove('active');
+            if (t === tab) sb.classList.add('active-sidebar-link');
+            else sb.classList.remove('active-sidebar-link');
         }
     });
     if (tab === 'users') loadAdminUsers();
@@ -603,7 +984,7 @@ async function loadAdminProjects() {
         renderAdminProjectsTable(data);
     } catch (e) {
         console.error("loadAdminProjects Error:", e);
-        if(tbody) tbody.innerHTML = `<tr><td colspan="7" style="color:red; text-align:center; padding: 2rem;">Error al cargar los proyectos.</td></tr>`;
+        if(tbody) tbody.innerHTML = `<tr><td colspan="7" class="px-8 py-20 text-center text-status-danger font-bold text-sm bg-red-50/50 rounded-2xl">Error al cargar los proyectos.</td></tr>`;
     }
 }
 
@@ -612,37 +993,64 @@ function renderAdminProjectsTable(projects) {
     if(!tbody) return;
 
     if(!projects || projects.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 2rem; color: var(--text-secondary);">No hay proyectos registrados. Crea uno con "+ Nuevo Proyecto".</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="px-8 py-20 text-center text-slate-400 font-medium">No se encontraron proyectos</td></tr>`;
         return;
     }
 
-    const catClass = { 'Desarrollo': 'badge-info', 'Propuesta': 'badge-warning', 'Aplicación': 'badge-success' };
-    const estadoClass = { 'Pendiente': 'badge-warning', 'Evaluado': 'badge-success', 'Vencida': 'badge-danger' };
+    const catStyles = { 
+        'Desarrollo': 'bg-blue-50 text-blue-600 border-blue-100', 
+        'Propuesta': 'bg-amber-50 text-amber-600 border-amber-100', 
+        'Aplicación': 'bg-emerald-50 text-emerald-600 border-emerald-100' 
+    };
+    const estadoStyles = { 
+        'Pendiente': 'bg-slate-100 text-slate-500 border-slate-200', 
+        'Evaluado': 'bg-primary/10 text-primary border-primary/20', 
+        'Vencida': 'bg-red-50 text-status-danger border-red-100' 
+    };
 
     tbody.innerHTML = projects.map(p => {
-        // Extract assigned evaluators if any
-        let asignado = 'Ninguno';
+        let asignado = 'Sin asignar';
         if (p.proyecto_evaluadores && p.proyecto_evaluadores.length > 0) {
-            const evaluatoresNames = p.proyecto_evaluadores
-                .filter(pe => pe.perfiles)
-                .map(pe => pe.perfiles.nombre);
-            if (evaluatoresNames.length > 0) {
-                asignado = evaluatoresNames.join(', ');
-            }
+            const names = p.proyecto_evaluadores.filter(pe => pe.perfiles).map(pe => pe.perfiles.nombre);
+            if (names.length > 0) asignado = names.join(', ');
         }
 
         return `
-            <tr>
-                <td><strong>${escapeHTML(p.nombre)}</strong></td>
-                <td><span class="badge ${catClass[p.categoria] || ''}">${escapeHTML(p.categoria)}</span></td>
-                <td style="text-align:center;">${escapeHTML(p.semestre)}°</td>
-                <td style="text-align:center;">${escapeHTML(p.anio)}</td>
-                <td>${escapeHTML(asignado)}</td>
-                <td><span class="badge ${estadoClass[p.estado] || ''}">${escapeHTML(p.estado)}</span></td>
-                <td>
-                    <div style="display: flex; justify-content: flex-end; align-items: center; gap: 0.75rem;">
-                        <button class="btn btn-outline" onclick="openEditProjectModal('${p.id}')" style="padding: 0.3rem 0.7rem;" title="Editar Proyecto"><i class="fa-solid fa-pen"></i></button>
-                        <button class="btn btn-outline" onclick="deleteProject('${p.id}')" style="padding: 0.3rem 0.7rem; color: var(--status-danger); border-color: var(--status-danger);" title="Eliminar Proyecto"><i class="fa-solid fa-trash"></i></button>
+            <tr class="hover:bg-slate-50/50 transition-colors group">
+                <td class="px-4 py-5">
+                    <div class="flex flex-col gap-1">
+                        <p class="font-black text-slate-800 text-sm truncate max-w-[200px]" title="${escapeHTML(p.nombre)}">${escapeHTML(p.nombre)}</p>
+                        <p class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">${escapeHTML(p.tipo)}</p>
+                    </div>
+                </td>
+                <td class="px-3 py-5 text-center">
+                    <span class="inline-flex px-3 py-1 rounded-lg bg-slate-50 text-[9px] font-black text-slate-500 border border-slate-100">
+                        ${escapeHTML(p.categoria)}
+                    </span>
+                </td>
+                <td class="px-1 py-5 text-center text-slate-600 font-bold text-xs border-l border-slate-50">${p.semestre}°</td>
+                <td class="px-1 py-5 text-center text-slate-400 font-medium text-xs border-r border-slate-50">${p.anio}</td>
+                <td class="px-4 py-5">
+                    <div class="flex flex-wrap gap-1 max-w-[180px]">
+                        ${asignado === 'Sin asignar' 
+                            ? `<span class="px-2 py-0.5 bg-slate-50 text-slate-400 text-[9px] font-black rounded-lg italic">Sin asignar</span>`
+                            : asignado.split(', ').map(n => `<span class="px-2 py-0.5 bg-slate-100 text-slate-500 text-[9px] font-bold rounded-lg truncate max-w-[100px]">${escapeHTML(n)}</span>`).join('')
+                        }
+                    </div>
+                </td>
+                <td class="px-3 py-5 text-center">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-widest ${estadoStyles[p.estado] || 'bg-slate-50 text-slate-400 border-slate-100'}">
+                        ${escapeHTML(p.estado)}
+                    </span>
+                </td>
+                <td class="px-4 py-5">
+                    <div class="flex items-center justify-center gap-1.5">
+                        <button onclick="openEditProjectModal('${p.id}')" class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary/5 text-primary hover:bg-primary hover:text-white transition-all shadow-sm" title="Editar">
+                            <i class="fa-solid fa-pen text-[10px]"></i>
+                        </button>
+                        <button onclick="deleteProject('${p.id}')" class="w-8 h-8 flex items-center justify-center rounded-lg bg-status-danger/5 text-status-danger hover:bg-status-danger hover:text-white transition-all shadow-sm" title="Eliminar">
+                            <i class="fa-solid fa-trash text-[10px]"></i>
+                        </button>
                     </div>
                 </td>
             </tr>
@@ -860,70 +1268,20 @@ async function openEditProjectModal(projectId) {
     const p = adminProjectsCache.find(x => x.id === projectId);
     if (!p) return;
 
-    // Inject modal if not present
-    if (!document.getElementById('edit-project-modal')) {
-        document.body.insertAdjacentHTML('beforeend', `
-        <div id="edit-project-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.55); z-index:1000; justify-content:center; align-items:center;">
-            <div style="background:var(--bg-surface); padding:2rem; border-radius:16px; width:100%; max-width:520px; box-shadow:0 20px 60px rgba(0,0,0,0.3); max-height:90vh; overflow-y:auto;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-                    <h3 style="color:var(--text-primary); margin:0;"><i class="fa-solid fa-pen" style="color:var(--primary-color);"></i> Editar Proyecto</h3>
-                    <button onclick="closeEditProjectModal()" style="background:none; border:none; cursor:pointer; color:var(--text-secondary); font-size:1.2rem;"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <form id="edit-project-form" onsubmit="handleEditProject(event)" style="display:flex; flex-direction:column; gap:1rem;">
-                    <input type="hidden" id="edit-proj-id">
-                    <div>
-                        <label style="display:block; margin-bottom:0.4rem; color:var(--text-primary); font-weight:500; font-size:0.9rem;">Nombre del Proyecto</label>
-                        <input type="text" id="edit-proj-nombre" required style="width:100%; padding:0.8rem; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-base); color:var(--text-primary); box-sizing:border-box;">
-                    </div>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
-                        <div>
-                            <label style="display:block; margin-bottom:0.4rem; color:var(--text-primary); font-weight:500; font-size:0.9rem;">Categoría</label>
-                            <select id="edit-proj-cat" required style="width:100%; padding:0.8rem; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-base); color:var(--text-primary);">
-                                <option value="Desarrollo">Desarrollo</option>
-                                <option value="Propuesta">Propuesta</option>
-                                <option value="Aplicación">Aplicación</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label style="display:block; margin-bottom:0.4rem; color:var(--text-primary); font-weight:500; font-size:0.9rem;">Semestre</label>
-                            <select id="edit-proj-sem" required style="width:100%; padding:0.8rem; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-base); color:var(--text-primary);">
-                                <option value="1">1 (Primer Semestre)</option>
-                                <option value="2">2 (Segundo Semestre)</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <label style="display:block; margin-bottom:0.4rem; color:var(--text-primary); font-weight:500; font-size:0.9rem;">Año</label>
-                        <input type="number" id="edit-proj-year" required min="2020" max="2035" style="width:100%; padding:0.8rem; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-base); color:var(--text-primary); box-sizing:border-box;">
-                    </div>
-                    <div style="padding-top:0.75rem; border-top:1px solid var(--border-color);">
-                        <label style="display:block; margin-bottom:0.75rem; color:var(--text-primary); font-weight:500; font-size:0.9rem;">Docentes Evaluadores</label>
-                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.75rem;">
-                            <div><label style="font-size:0.8rem; color:var(--text-secondary);">Evaluador 1</label><select id="edit-proj-ev1" style="width:100%; padding:0.7rem; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-base); color:var(--text-primary);"><option value="">-- Ninguno --</option></select></div>
-                            <div><label style="font-size:0.8rem; color:var(--text-secondary);">Evaluador 2</label><select id="edit-proj-ev2" style="width:100%; padding:0.7rem; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-base); color:var(--text-primary);"><option value="">-- Ninguno --</option></select></div>
-                            <div><label style="font-size:0.8rem; color:var(--text-secondary);">Evaluador 3</label><select id="edit-proj-ev3" style="width:100%; padding:0.7rem; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-base); color:var(--text-primary);"><option value="">-- Ninguno --</option></select></div>
-                        </div>
-                    </div>
-                    <div>
-                        <label style="display:block; margin-bottom:0.4rem; color:var(--text-primary); font-weight:500; font-size:0.9rem;">Estudiante Asignado</label>
-                        <select id="edit-proj-student" style="width:100%; padding:0.8rem; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-base); color:var(--text-primary);"><option value="">-- Sin asignar --</option></select>
-                    </div>
-                    <div id="edit-proj-error" style="display:none; color:var(--status-danger); background:#FEE2E2; padding:0.75rem; border-radius:6px; font-size:0.9rem;"></div>
-                    <div style="display:flex; gap:1rem; margin-top:0.5rem;">
-                        <button type="button" class="btn btn-outline" onclick="closeEditProjectModal()" style="flex:1;">Cancelar</button>
-                        <button type="submit" class="btn btn-primary" id="btn-edit-project" style="flex:1;">Guardar Cambios</button>
-                    </div>
-                </form>
-            </div>
-        </div>`);
-    }
-
-    // Populate basic fields
-    document.getElementById('edit-proj-id').value    = p.id;
+    const modal = document.getElementById('edit-project-modal');
+    if (!modal) return;
+    
+    document.getElementById('edit-proj-id').value = p.id;
     document.getElementById('edit-proj-nombre').value = p.nombre;
-    document.getElementById('edit-proj-cat').value   = p.categoria;
-    document.getElementById('edit-proj-sem').value   = p.semestre;
-    document.getElementById('edit-proj-year').value  = p.anio;
+    document.getElementById('edit-proj-cat').value = p.categoria;
+    document.getElementById('edit-proj-sem').value = p.semestre;
+    document.getElementById('edit-proj-year').value = p.anio;
+    
+    const errBox = document.getElementById('edit-proj-error');
+    if(errBox) errBox.classList.add('hidden');
+    
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
     document.getElementById('edit-proj-error').style.display = 'none';
     document.getElementById('edit-project-modal').style.display = 'flex';
 
@@ -1028,7 +1386,9 @@ async function loadAdminPostulaciones(estadoFilter) {
     if (!supabaseClient) return;
     const tbody = document.getElementById('admin-postulaciones-tbody');
     if (!tbody) return;
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--text-secondary);"><i class="fa-solid fa-circle-notch fa-spin"></i> Cargando...</td></tr>`;
+    
+    tbody.innerHTML = `<tr><td colspan="6" class="px-8 py-20 text-center"><div class="inline-block animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div></td></tr>`;
+    
     try {
         let query = supabaseClient
             .from('postulaciones')
@@ -1039,41 +1399,92 @@ async function loadAdminPostulaciones(estadoFilter) {
         if (error) throw error;
 
         if (!data || data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--text-secondary);">No hay postulaciones${estadoFilter ? ' con este estado' : ''}.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" class="px-8 py-20 text-center text-slate-400 font-medium">No hay postulaciones registradas</td></tr>`;
             return;
         }
-        const estConfig = { 'Pendiente de revisión':'badge-warning', 'En revisión':'badge-info', 'Aprobado':'badge-success', 'No aprobado':'badge-danger' };
-        const catClass  = { 'Desarrollo':'badge-info', 'Propuesta':'badge-warning', 'Aplicado':'badge-success' };
+
+        const estConfig = { 
+            'Pendiente de revisión': 'bg-amber-50 text-amber-600 border-amber-100', 
+            'En revisión': 'bg-blue-50 text-blue-600 border-blue-100', 
+            'Aprobado': 'bg-emerald-50 text-emerald-600 border-emerald-100', 
+            'No aprobado': 'bg-red-50 text-status-danger border-red-100' 
+        };
+        const catClass = { 
+            'Desarrollo': 'bg-blue-50 text-blue-600 border-blue-100', 
+            'Propuesta': 'bg-slate-50 text-slate-500 border-slate-100', 
+            'Aplicado': 'bg-emerald-50 text-emerald-600 border-emerald-100' 
+        };
+
+        // Update active filter button styles
+        const filterBtns = {
+            '': 'pfbtn-todos',
+            'Pendiente de revisión': 'pfbtn-pendiente',
+            'En revisión': 'pfbtn-revision',
+            'Aprobado': 'pfbtn-aprobado',
+            'No aprobado': 'pfbtn-noaprobado'
+        };
+        Object.values(filterBtns).forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn) {
+                if (id === filterBtns[estadoFilter]) {
+                    btn.classList.replace('bg-surface', 'bg-primary');
+                    btn.classList.replace('text-slate-500', 'text-white');
+                    btn.classList.replace('border-slate-100', 'border-primary');
+                } else {
+                    btn.classList.replace('bg-primary', 'bg-surface');
+                    btn.classList.replace('text-white', 'text-slate-500');
+                    btn.classList.replace('border-primary', 'border-slate-100');
+                }
+            }
+        });
+
         tbody.innerHTML = data.map(p => {
-            const fecha = new Date(p.created_at).toLocaleDateString('es-CO');
+            const fecha = new Date(p.created_at).toLocaleDateString();
             return `
-                <tr>
-                    <td><strong>${escapeHTML(p.nombre)}</strong></td>
-                    <td>${escapeHTML(p.estudiante?.nombre || '—')}</td>
-                    <td><span class="badge ${catClass[p.categoria] || ''}">${escapeHTML(p.categoria)}</span></td>
-                    <td>${fecha}</td>
-                    <td><span class="badge ${estConfig[p.estado] || ''}">${escapeHTML(p.estado)}</span></td>
-                    <td style="text-align:right;">
-                        <button class="btn btn-outline" onclick="openGestionarPost('${p.id}')" style="padding:0.3rem 0.8rem;"><i class="fa-solid fa-gear"></i> Gestionar</button>
+                <tr class="hover:bg-slate-50/50 transition-colors group">
+                    <td class="px-8 py-5">
+                       <span class="font-bold text-slate-700 block max-w-xs truncate" title="${escapeHTML(p.nombre)}">${escapeHTML(p.nombre)}</span>
+                    </td>
+                    <td class="px-8 py-5 text-slate-600 font-medium">${escapeHTML(p.estudiante?.nombre || '—')}</td>
+                    <td class="px-8 py-5 text-center">
+                        <span class="inline-flex items-center px-4 py-1 rounded-full border text-[10px] font-black uppercase tracking-widest ${catClass[p.categoria] || 'bg-slate-50 text-slate-400 border-slate-100'}">
+                            ${escapeHTML(p.categoria)}
+                        </span>
+                    </td>
+                    <td class="px-8 py-5 text-slate-500 font-medium text-sm text-center">${fecha}</td>
+                    <td class="px-8 py-5 text-center">
+                        <span class="inline-flex items-center px-4 py-1 rounded-full border text-[10px] font-black uppercase tracking-widest ${estConfig[p.estado] || 'bg-slate-50 text-slate-400 border-slate-100'}">
+                            ${escapeHTML(p.estado)}
+                        </span>
+                    </td>
+                    <td class="px-8 py-5">
+                         <button onclick="openGestionarPost('${p.id}')" 
+                            class="w-full px-4 py-2 rounded-xl bg-slate-100 text-slate-500 hover:bg-primary hover:text-white font-bold text-xs transition-all shadow-sm">
+                            <i class="fa-solid fa-gear mr-2"></i>Gestionar
+                        </button>
                     </td>
                 </tr>`;
         }).join('');
     } catch (err) {
         console.error('loadAdminPostulaciones Error:', err);
-        tbody.innerHTML = `<tr><td colspan="6" style="color:red; text-align:center; padding:2rem;">Error al cargar postulaciones.</td></tr>`;
     }
 }
 
 async function openGestionarPost(id) {
     currentGPostId = id;
-    const modal   = document.getElementById('gestionar-post-modal');
+    const modal = document.getElementById('gestionar-post-modal');
     const details = document.getElementById('gpost-details');
-    const errBox  = document.getElementById('gpost-error');
-    const okBox   = document.getElementById('gpost-ok');
-    errBox.style.display = 'none';
-    okBox.style.display  = 'none';
-    modal.style.display  = 'flex';
-    details.innerHTML    = '<div style="text-align:center; padding:1rem;"><i class="fa-solid fa-circle-notch fa-spin" style="color:var(--primary-color);"></i></div>';
+    const errBox = document.getElementById('gpost-error');
+    const okBox = document.getElementById('gpost-ok');
+    
+    if(errBox) errBox.classList.add('hidden');
+    if(okBox) okBox.classList.add('hidden');
+    if(modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+    
+    details.innerHTML = '<div class="py-20 flex justify-center"><div class="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full"></div></div>';
 
     try {
         const { data: p, error } = await supabaseClient
@@ -1082,49 +1493,87 @@ async function openGestionarPost(id) {
             .eq('id', id).single();
         if (error) throw error;
 
-        const estConfig = { 'Pendiente de revisión':'badge-warning', 'En revisión':'badge-info', 'Aprobado':'badge-success', 'No aprobado':'badge-danger' };
+        const estConfig = { 
+            'Pendiente de revisión': 'bg-amber-50 text-amber-600 border-amber-100', 
+            'En revisión': 'bg-blue-50 text-blue-600 border-blue-100', 
+            'Aprobado': 'bg-emerald-50 text-emerald-600 border-emerald-100', 
+            'No aprobado': 'bg-red-50 text-status-danger border-red-100' 
+        };
         const fecha = new Date(p.created_at).toLocaleDateString('es-CO', { year:'numeric', month:'long', day:'numeric' });
 
         let downloadBtn = '';
         if (p.archivo_path) {
             const { data: sd } = await supabaseClient.storage.from('postulaciones-docs').createSignedUrl(p.archivo_path, 3600);
             if (sd?.signedUrl) {
-                downloadBtn = `<a href="${sd.signedUrl}" target="_blank" class="btn btn-outline" style="margin-top:0.75rem; display:inline-flex; align-items:center; gap:0.4rem;"><i class="fa-solid fa-file-word" style="color:#2563EB;"></i> Descargar Word</a>`;
+                downloadBtn = `
+                    <a href="${sd.signedUrl}" target="_blank" 
+                        class="inline-flex items-center gap-3 px-6 py-4 bg-slate-50 hover:bg-slate-100 rounded-2xl text-primary font-black text-sm transition-all border border-slate-100">
+                        <i class="fa-solid fa-file-word text-xl"></i> 
+                        Descargar Word de Postulación
+                    </a>`;
             }
         }
+        
         const obs = p.observacion_docente
-            ? `<div style="margin-top:0.75rem; padding:0.75rem; background:var(--bg-base); border-radius:8px; border-left:3px solid var(--primary-color);"><p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:0.2rem;">Observación del docente:</p><p style="color:var(--text-primary); font-size:0.9rem;">${escapeHTML(p.observacion_docente)}</p></div>` : '';
+            ? `<div class="p-6 bg-slate-50 rounded-2xl border-l-4 border-primary space-y-2">
+                 <span class="block text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Observación del docente</span>
+                 <p class="text-slate-700 font-bold leading-relaxed">${escapeHTML(p.observacion_docente)}</p>
+               </div>` : '';
 
         details.innerHTML = `
-            <div style="display:grid; gap:0.75rem;">
-                <div><span style="color:var(--text-secondary); font-size:0.78rem; text-transform:uppercase;">Nombre</span><p style="color:var(--text-primary); font-weight:600;">${escapeHTML(p.nombre)}</p></div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
-                    <div><span style="color:var(--text-secondary); font-size:0.78rem; text-transform:uppercase;">Estudiante</span><p style="color:var(--text-primary);">${escapeHTML(p.estudiante?.nombre || '—')}</p></div>
-                    <div><span style="color:var(--text-secondary); font-size:0.78rem; text-transform:uppercase;">Categoría</span><p style="color:var(--text-primary);">${escapeHTML(p.categoria)}</p></div>
+            <div class="space-y-8">
+                <div class="space-y-1">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Proyecto</span>
+                    <h4 class="text-2xl font-black text-slate-800 leading-tight">${escapeHTML(p.nombre)}</h4>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
-                    <div><span style="color:var(--text-secondary); font-size:0.78rem; text-transform:uppercase;">Fecha</span><p style="color:var(--text-primary);">${fecha}</p></div>
-                    <div><span style="color:var(--text-secondary); font-size:0.78rem; text-transform:uppercase;">Estado</span><p><span class="badge ${estConfig[p.estado] || ''}">${escapeHTML(p.estado)}</span></p></div>
+                
+                <div class="grid grid-cols-2 gap-8 p-6 bg-slate-50/50 rounded-3xl border border-slate-50">
+                    <div class="space-y-1">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Estudiante</span>
+                        <p class="text-slate-700 font-bold">${escapeHTML(p.estudiante?.nombre || '—')}</p>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Estado</span>
+                        <div>
+                            <span class="inline-flex items-center px-4 py-1 rounded-full border text-[10px] font-black uppercase tracking-widest ${estConfig[p.estado] || ''}">
+                                ${escapeHTML(p.estado)}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Categoría</span>
+                        <p class="text-slate-700 font-bold">${escapeHTML(p.categoria)}</p>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Fecha Registro</span>
+                        <p class="text-slate-700 font-bold text-sm">${fecha}</p>
+                    </div>
                 </div>
-                <div><span style="color:var(--text-secondary); font-size:0.78rem; text-transform:uppercase;">Revisor asignado</span><p style="color:var(--text-primary);">${escapeHTML(p.revisor?.nombre || 'Sin asignar')}</p></div>
+
+                <div class="space-y-1">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Revisor Actual</span>
+                    <p class="flex items-center gap-2 text-slate-700 font-black">
+                        <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                        ${escapeHTML(p.revisor?.nombre || 'Sin asignar todavía')}
+                    </p>
+                </div>
+                
                 ${obs}
-                ${downloadBtn}
+                <div class="pt-2">${downloadBtn}</div>
             </div>`;
 
-        // Load docentes into select
         const sel = document.getElementById('gpost-select-docente');
         const { data: docs } = await supabaseClient.from('perfiles').select('id, nombre').eq('rol', 'docente').order('nombre');
         sel.innerHTML = '<option value="">-- Selecciona un docente revisor --</option>';
         (docs || []).forEach(d => { const o = document.createElement('option'); o.value = d.id; o.textContent = d.nombre; sel.appendChild(o); });
-
     } catch (err) {
         console.error('openGestionarPost Error:', err);
-        details.innerHTML = `<p style="color:var(--status-danger);">Error al cargar los detalles.</p>`;
     }
 }
 
 function cerrarGestionarPost() {
-    document.getElementById('gestionar-post-modal').style.display = 'none';
+    const modal = document.getElementById('gestionar-post-modal');
+    if(modal) modal.classList.add('hidden');
     currentGPostId = null;
 }
 
@@ -1132,22 +1581,70 @@ async function handleAsignarRevisor() {
     if (!supabaseClient || !currentGPostId) return;
     const docenteId = document.getElementById('gpost-select-docente').value;
     const errBox = document.getElementById('gpost-error');
-    const okBox  = document.getElementById('gpost-ok');
-    errBox.style.display = 'none';
-    okBox.style.display  = 'none';
-    if (!docenteId) { errBox.textContent = 'Selecciona un docente.'; errBox.style.display = 'block'; return; }
+    const okBox = document.getElementById('gpost-ok');
+    
+    if(errBox) errBox.classList.add('hidden');
+    if(okBox) okBox.classList.add('hidden');
+
+    if (!docenteId) { 
+        if(errBox) {
+            errBox.querySelector('span').textContent = 'Selecciona un docente.';
+            errBox.classList.remove('hidden');
+            errBox.classList.add('flex');
+        }
+        return; 
+    }
     try {
         const { error } = await supabaseClient
             .from('postulaciones')
             .update({ docente_revisor_id: docenteId, estado: 'En revisión' })
             .eq('id', currentGPostId);
         if (error) throw error;
-        okBox.innerHTML = '<i class="fa-solid fa-circle-check"></i> Docente asignado correctamente. Estado cambiado a "En revisión".';
-        okBox.style.display = 'block';
+        
+        if(okBox) {
+            okBox.classList.remove('hidden');
+            okBox.classList.add('flex');
+        }
         loadAdminPostulaciones('');
     } catch (err) {
         console.error('handleAsignarRevisor Error:', err);
-        errBox.textContent = 'Error al asignar el docente: ' + (err.message || '');
-        errBox.style.display = 'block';
+        if(errBox) {
+            errBox.querySelector('span').textContent = 'Error: ' + (err.message || '');
+            errBox.classList.remove('hidden');
+            errBox.classList.add('flex');
+        }
+    }
+}
+
+function validateAdminUserEmail(prefix) {
+    const email = document.getElementById(`${prefix}-user-email`).value.trim();
+    const hint = document.getElementById(`${prefix}-user-email-hint`);
+    const btn = document.getElementById(`btn-${prefix}-user`);
+    const isValid = (prefix === 'edit' && email === '') || validateUnipazEmail(email);
+    
+    if (email.length > 0) {
+        if (isValid) {
+            hint.textContent = 'Correo válido';
+            hint.classList.replace('text-slate-400', 'text-status-success');
+            hint.classList.remove('text-status-danger');
+        } else {
+            hint.textContent = 'Debe ser @unipaz.edu.co';
+            hint.classList.replace('text-slate-400', 'text-status-danger');
+            hint.classList.remove('text-status-success');
+        }
+    } else {
+        hint.textContent = 'Solo @unipaz.edu.co';
+        hint.classList.add('text-slate-400');
+        hint.classList.remove('text-status-success', 'text-status-danger');
+    }
+    
+    if (btn) {
+        if (isValid) {
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        } else {
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
     }
 }

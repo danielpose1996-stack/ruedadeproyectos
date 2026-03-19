@@ -38,14 +38,30 @@ async function handleLogin(event, role) {
         return;
     }
 
-    const email = document.getElementById('login-email').value;
+    const email = document.getElementById('login-email').value.trim();
     const password = document.getElementById('login-password').value;
     const errorDiv = document.getElementById('login-error');
-    const submitBtn = event.target.querySelector('button[type="submit"]');
+    const submitBtn = document.getElementById('btn-login');
     
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Ingresando...';
-    errorDiv.style.display = 'none';
+    // Safety check for domain
+    if (!validateUnipazEmail(email)) {
+        if(errorDiv) {
+            errorDiv.textContent = 'Por favor, ingrese un correo institucional @unipaz.edu.co válido.';
+            errorDiv.classList.remove('hidden');
+            errorDiv.style.display = 'block';
+        }
+        return;
+    }
+
+    if(submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Ingresando...';
+        submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    }
+    if(errorDiv) {
+        errorDiv.style.display = 'none';
+        errorDiv.classList.add('hidden');
+    }
     
     // Authenticate with Supabase
     const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
@@ -55,10 +71,16 @@ async function handleLogin(event, role) {
 
     if (authError) {
         console.error("Auth Error:", authError);
-        errorDiv.textContent = 'Autenticación fallida: Credenciales incorrectas o cuentas inexistentes.';
-        errorDiv.style.display = 'block';
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Ingresar';
+        if(errorDiv) {
+            errorDiv.textContent = 'Autenticación fallida: Credenciales incorrectas o cuenta inexistente.';
+            errorDiv.classList.remove('hidden');
+            errorDiv.style.display = 'block';
+        }
+        if(submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Ingresar';
+            submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
         return;
     }
 

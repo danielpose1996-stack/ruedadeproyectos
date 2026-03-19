@@ -18,3 +18,23 @@ function escapeHTML(str) {
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
 }
+
+// EMAIL VALIDATION UTILITIES
+function validateUnipazEmail(email) {
+    if (!email) return false;
+    const re = /^[a-zA-Z0-9._%+-]+@unipaz\.edu\.co$/;
+    return re.test(email.toLowerCase());
+}
+
+function updateSubmitButtonState(buttonId, isValid) {
+    const btn = document.getElementById(buttonId);
+    if (!btn) return;
+    
+    if (isValid) {
+        btn.disabled = false;
+        btn.classList.remove('opacity-50', 'cursor-not-allowed');
+    } else {
+        btn.disabled = true;
+        btn.classList.add('opacity-50', 'cursor-not-allowed');
+    }
+}

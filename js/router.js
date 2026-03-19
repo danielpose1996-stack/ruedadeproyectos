@@ -55,12 +55,42 @@ function initRouter() {
             }
             
             // Update active state in top nav
-            document.querySelectorAll('.nav-links a').forEach(el => el.classList.remove('active'));
-            if(link.closest('.nav-links')) {
-                link.classList.add('active');
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('text-primary', 'font-bold'));
+            if(link.classList.contains('nav-link')) {
+                link.classList.add('text-primary', 'font-bold');
             }
         });
     });
+
+    // Dropdown Toggles and Outside Clicks (Added once here)
+    const userAvatarBtn = document.getElementById('user-avatar-btn');
+    const userDropdown = document.getElementById('user-dropdown');
+    const userMenu = document.getElementById('user-menu');
+    const panelBtn = document.getElementById('header-btn-panel');
+
+    if (userAvatarBtn && userDropdown) {
+        userAvatarBtn.onclick = (e) => {
+            e.stopPropagation();
+            userDropdown.classList.toggle('hidden');
+        };
+
+        document.addEventListener('click', (e) => {
+            if (userMenu && !userMenu.contains(e.target)) {
+                userDropdown.classList.add('hidden');
+            }
+        });
+    }
+
+    if (panelBtn) {
+        panelBtn.onclick = (e) => {
+            e.preventDefault();
+            if (!currentProfile) return;
+            if(currentProfile.rol === 'docente') navigateTo('dashboard-docente');
+            else if(currentProfile.rol === 'estudiante') navigateTo('dashboard-estudiante');
+            else if(currentProfile.rol === 'admin') navigateTo('dashboard-admin');
+            userDropdown.classList.add('hidden');
+        };
+    }
 }
 
 function navigateTo(route, data = null) {
@@ -133,9 +163,10 @@ function updateGlobalHeader() {
     const userMenu = document.getElementById('user-menu');
     
     if (currentUser && currentProfile) {
-        if (authBtns) authBtns.style.display = 'none';
+        if (authBtns) authBtns.classList.add('hidden');
         if (userMenu) {
-            userMenu.style.display = 'flex';
+            userMenu.classList.remove('hidden');
+            userMenu.classList.add('flex');
             
             // Setup User Information
             const avatarInitial = document.getElementById('header-avatar-initial');
@@ -148,45 +179,14 @@ function updateGlobalHeader() {
             if (nameEl) nameEl.textContent = currentProfile.nombre;
             if (roleEl) {
                 roleEl.textContent = currentProfile.rol.toUpperCase();
-                roleEl.className = 'badge';
-                if(currentProfile.rol === 'admin') roleEl.classList.add('badge-danger');
-                else if(currentProfile.rol === 'docente') roleEl.classList.add('badge-info');
-                else roleEl.classList.add('badge-success'); // estudiante
-            }
-            
-            // Setup Panel Link route dynamically
-            const panelBtn = document.getElementById('header-btn-panel');
-            if (panelBtn) {
-                panelBtn.onclick = (e) => {
-                    e.preventDefault();
-                    if(currentProfile.rol === 'docente') navigateTo('dashboard-docente');
-                    else if(currentProfile.rol === 'estudiante') navigateTo('dashboard-estudiante');
-                    else if(currentProfile.rol === 'admin') navigateTo('dashboard-admin');
-                    document.getElementById('user-dropdown').style.display = 'none';
-                };
-            }
-            
-            // Handle clicking avatar to toggle dropdown
-            const userAvatarBtn = document.getElementById('user-avatar-btn');
-            const userDropdown = document.getElementById('user-dropdown');
-            if (userAvatarBtn && userDropdown) {
-                // Ensure no duplicate listener
-                userAvatarBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    const isVisible = userDropdown.style.display === 'flex';
-                    userDropdown.style.display = isVisible ? 'none' : 'flex';
-                };
-                
-                // Close when clicking outside
-                document.addEventListener('click', (e) => {
-                    if (!userMenu.contains(e.target)) {
-                        userDropdown.style.display = 'none';
-                    }
-                });
+                roleEl.className = 'inline-block mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-colors';
+                if(currentProfile.rol === 'admin') roleEl.classList.add('bg-red-100', 'text-red-600');
+                else if(currentProfile.rol === 'docente') roleEl.classList.add('bg-blue-100', 'text-blue-600');
+                else roleEl.classList.add('bg-green-100', 'text-green-600'); // estudiante
             }
         }
     } else {
-        if (authBtns) authBtns.style.display = 'flex';
-        if (userMenu) userMenu.style.display = 'none';
+        if (authBtns) authBtns.classList.remove('hidden');
+        if (userMenu) userMenu.classList.add('hidden');
     }
 }
