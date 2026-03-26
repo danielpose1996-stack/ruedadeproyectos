@@ -1,5 +1,5 @@
-const SUPABASE_URL = 'https://gbjmulgwdjxqehhlrqjy.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdiam11bGd3ZGp4cWVoaGxycWp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMjY4NDcsImV4cCI6MjA4ODYwMjg0N30.y_goVlRIjd9DAmUbAcjz7JW23WYs5ztUWtOKlIFQkjw';
+const SUPABASE_URL = '@@SUPABASE_URL@@';
+const SUPABASE_ANON_KEY = '@@SUPABASE_ANON_KEY@@';
 
 let supabaseClient = null;
 

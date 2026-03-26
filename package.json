@@ -1,0 +1,8 @@
+{
+  "name": "ruedadeproyectos",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "cp js/config.js.template js/config.js && sed -i \"s|@@SUPABASE_URL@@|$SUPABASE_URL|g\" js/config.js && sed -i \"s|@@SUPABASE_ANON_KEY@@|$SUPABASE_ANON_KEY|g\" js/config.js",
+    "dev": "npx serve ./"
+  }
+}
