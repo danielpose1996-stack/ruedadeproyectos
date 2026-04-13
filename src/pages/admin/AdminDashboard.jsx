@@ -144,6 +144,7 @@ export default function AdminDashboard() {
       const result = await response.json()
       if (!response.ok || result.error) throw new Error(result.error || `Error ${response.status}`)
 
+      await supabase.from('perfiles').delete().eq('id', deleteConfirm.id)
       setDeleteConfirm({ show: false, id: null })
       loadUsers()
     } catch (err) {
@@ -178,6 +179,7 @@ export default function AdminDashboard() {
           const result = await response.json();
           if (!response.ok || result.error) throw new Error(result.error || `Error ${response.status}`);
           
+          await supabase.from('perfiles').delete().eq('id', u.id);
           eliminados++;
         } catch (subError) {
           console.error(`Fallo al eliminar a ${u.nombre}:`, subError);
