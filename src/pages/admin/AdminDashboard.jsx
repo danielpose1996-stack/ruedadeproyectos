@@ -17,6 +17,14 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('users')
   const [loading, setLoading] = useState(false)
 
+  const handleAuthError = async (err) => {
+    if (err?.message?.includes('invalid token') || err?.message?.includes('sesión activa') || err?.message?.includes('401')) {
+      alert('🔒 Por tu seguridad, la sesión ha expirado por inactividad. Inicia sesión nuevamente.');
+      await logout();
+      navigate('/login-admin');
+    }
+  }
+
   // ─── USERS ────
   const [users, setUsers] = useState([])
   const [userSearch, setUserSearch] = useState('')
@@ -88,6 +96,7 @@ export default function AdminDashboard() {
       loadUsers()
     } catch (err) {
       setUserError(err.message || 'Error al crear usuario.')
+      handleAuthError(err)
     } finally { setUserSubmitting(false) }
   }
 
@@ -126,6 +135,7 @@ export default function AdminDashboard() {
       loadUsers()
     } catch (err) {
       setUserError(err.message || 'Error al editar usuario.')
+      handleAuthError(err)
     } finally { setUserSubmitting(false) }
   }
 
@@ -148,6 +158,7 @@ export default function AdminDashboard() {
     } catch (err) {
       console.error('deleteUser Error:', err)
       alert('Error al eliminar usuario: ' + err.message)
+      handleAuthError(err)
       setDeleteConfirm({ show: false, id: null })
     }
   }
@@ -195,6 +206,7 @@ export default function AdminDashboard() {
     } catch (err) {
       console.error('deleteAllUsers Error:', err)
       alert('Error crítico al realizar la eliminación masiva: ' + err.message)
+      handleAuthError(err)
     } finally {
       setLoading(false)
     }
