@@ -1,167 +1,19 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RuedaPro UNIPAZ - Plataforma Web</title>
+    <meta name="description" content="Plataforma web para la gestión, evaluación y publicación de resultados de la Rueda de Proyectos de Ingeniería Informática de UNIPAZ." />
     <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: {
-                DEFAULT: '#001C71',
-                dark: '#000F3D',
-                light: '#E6EEFA',
-              },
-              secondary: '#00B4FF',
-              'bg-base': '#F8FAFC',
-              surface: '#FFFFFF',
-              'border-color': '#E2E8F0',
-              status: {
-                success: '#10B981',
-                warning: '#F59E0B',
-                danger: '#EF4444',
-                info: '#3B82F6',
-              }
-            },
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-            },
-            boxShadow: {
-              'premium': '0 10px 30px -10px rgba(0, 28, 113, 0.1), 0 4px 15px -5px rgba(0, 28, 113, 0.05)',
-            }
-          }
-        }
-      }
-    </script>
-    <!-- FontAwesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Main Stylesheet -->
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
-<body class="font-sans antialiased bg-bg-base text-slate-900 transition-colors duration-300" data-theme="light">
-    <!-- Main Application Shell -->
-    <div class="flex flex-col min-h-screen">
-        <!-- Header -->
-        <header class="bg-surface/80 backdrop-blur-md border-b border-border-color sticky top-0 z-50 transition-all">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex justify-between items-center">
-                <div class="flex items-center gap-3 cursor-pointer" data-route="home">
-                    <div class="w-10 h-10 bg-primary flex items-center justify-center rounded-xl shadow-lg shadow-primary/20">
-                        <i class="fa-solid fa-gear text-white text-xl"></i>
-                    </div>
-                    <span class="text-xl font-bold tracking-tight text-primary">RuedaPro <span class="text-slate-500 font-medium">UNIPAZ</span></span>
-                </div>
-                
-                <!-- Desktop Navigation -->
-                <nav class="hidden md:flex items-center gap-8">
-                    <ul class="flex items-center gap-6">
-                        <li><a href="#" data-route="home" class="nav-link font-medium text-slate-600 hover:text-primary transition-colors active">Inicio</a></li>
-                        <li><a href="#" data-route="galeria" class="nav-link font-medium text-slate-600 hover:text-primary transition-colors">Galería</a></li>
-                        <li><a href="#" data-route="results" class="nav-link font-medium text-slate-600 hover:text-primary transition-colors">Resultados</a></li>
-                        
-                        <!-- Guest Auth Buttons -->
-                        <div id="auth-buttons" class="flex items-center gap-3 ml-4">
-                            <li><a href="#" data-route="login-docente" class="px-5 py-2.5 rounded-xl border border-primary text-primary font-semibold hover:bg-primary-light transition-all">Docente</a></li>
-                            <li><a href="#" data-route="login-estudiante" class="px-5 py-2.5 rounded-xl bg-primary text-white font-semibold hover:bg-primary-dark shadow-lg shadow-primary/20 transition-all">Estudiante</a></li>
-                        </div>
-                        
-                        <!-- Logged In User Menu -->
-                        <div id="user-menu" class="hidden items-center relative ml-4">
-                            <button id="user-avatar-btn" class="w-10 h-10 rounded-full border-2 border-primary overflow-hidden flex items-center justify-center bg-primary-light text-primary font-bold text-lg hover:ring-2 hover:ring-primary/50 transition-all uppercase">
-                                <span id="header-avatar-initial"></span>
-                            </button>
-                            <!-- Dropdown Menu -->
-                            <div id="user-dropdown" class="hidden absolute top-full right-0 mt-3 w-64 bg-surface rounded-2xl shadow-premium border border-border-color p-4 flex flex-col gap-2">
-                                <div class="border-b border-border-color pb-3 mb-2">
-                                    <strong id="header-user-name" class="text-slate-900 block truncate">Usuario</strong>
-                                    <span id="header-user-role" class="inline-block mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary-light text-primary">Rol</span>
-                                </div>
-                                <a href="#" id="header-btn-panel" class="w-full py-2.5 px-4 rounded-xl bg-primary text-white font-semibold text-center hover:bg-primary-dark transition-all">Ir a mi Panel</a>
-                                <a href="#" onclick="handleLogout(); return false;" class="w-full py-2.5 px-4 rounded-xl border border-status-danger text-status-danger font-semibold text-center hover:bg-red-50 transition-all">Cerrar Sesión</a>
-                            </div>
-                        </div>
-                    </ul>
-                </nav>
-
-                <!-- Mobile Menu Button -->
-                <button class="md:hidden w-10 h-10 flex items-center justify-center rounded-xl text-slate-600 border border-slate-200" id="mobile-menu-btn">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-            </div>
-        </header>
-
-        <!-- Main Content Area -->
-        <main id="app-content" class="flex-grow">
-            <!-- Dynamic views will be injected here by app.js -->
-        </main>
-
-        <!-- Footer -->
-        <footer class="bg-primary-dark text-slate-300 py-16 px-4 border-t border-primary/20">
-            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
-                <div class="space-y-4">
-                    <div class="flex items-center gap-2">
-                        <div class="w-8 h-8 bg-primary-light/10 flex items-center justify-center rounded-lg border border-primary-light/20">
-                            <i class="fa-solid fa-gear text-white"></i>
-                        </div>
-                        <h3 class="text-xl font-bold text-white tracking-tight">RuedaPro UNIPAZ</h3>
-                    </div>
-                    <p class="text-slate-400 text-sm leading-relaxed max-w-sm">
-                        Plataforma web para la gestión, evaluación y publicación de resultados de la Rueda de Proyectos de Ingeniería Informática de UNIPAZ.
-                    </p>
-                </div>
-                <div>
-                    <h4 class="text-white font-bold mb-6 flex items-center gap-2 uppercase text-xs tracking-widest opacity-50">Enlaces Rápidos</h4>
-                    <ul class="space-y-4">
-                        <li><a href="#" data-route="home" class="hover:text-white transition-colors flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px]"></i> Inicio</a></li>
-                        <li><a href="#" data-route="results" class="hover:text-white transition-colors flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px]"></i> Resultados Anteriores</a></li>
-                        <li><a href="#" data-route="login-admin" class="hover:text-white transition-colors flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px]"></i> Portal Administrativo</a></li>
-                    </ul>
-                </div>
-                <div class="bg-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur-sm">
-                    <h4 class="text-white font-bold mb-2">¿Necesitas ayuda?</h4>
-                    <p class="text-slate-400 text-sm mb-4">Contacta con el soporte técnico de la facultad.</p>
-                    <a href="mailto:soporte@unipaz.edu.co" class="block w-full py-2.5 bg-primary text-white text-center rounded-xl font-semibold hover:bg-secondary transition-all">Contactar Soporte</a>
-                </div>
-            </div>
-            <div class="max-w-7xl mx-auto mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs">
-                <p>&copy; 2026 UNIPAZ - Ingeniería Informática. Todos los derechos reservados.</p>
-                <div class="flex gap-6">
-                    <a href="#" class="hover:text-white transition-colors">Política de Privacidad</a>
-                    <a href="#" class="hover:text-white transition-colors">Términos de Servicio</a>
-                </div>
-            </div>
-        </footer>
-    </div>
-
-    <!-- Modals Container -->
-    <div id="modals-container">    </div>
-    
-    <!-- Supabase JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-    
-    <!-- Application Logic Modules -->
-    <script src="js/config.js" defer></script>
-    <script src="js/auth.js" defer></script>
-    
-    <!-- Views -->
-    <script src="js/views/homeView.js" defer></script>
-    <script src="js/views/galeriaView.js" defer></script>
-    <script src="js/views/resultsView.js" defer></script>
-    <script src="js/views/authView.js" defer></script>
-    <script src="js/views/evaluacionView.js" defer></script>
-    <script src="js/views/docenteDashboardView.js" defer></script>
-    <script src="js/views/adminDashboardView.js" defer></script>
-    <script src="js/views/estudianteDashboardView.js" defer></script>
-    
-    <!-- Routing and Init -->
-    <script src="js/router.js" defer></script>
-    <script src="js/main.js" defer></script>
+<body class="font-sans antialiased bg-bg-base text-slate-900">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>

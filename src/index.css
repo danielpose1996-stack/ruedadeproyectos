@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base Layer ─────────────────────────────────────────────── */
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-bg-base text-slate-700 font-sans;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  ::selection {
+    @apply bg-primary/10 text-primary;
+  }
+
+  /* Better focus rings */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-primary/30 ring-offset-2 ring-offset-white;
+  }
+}
+
+/* ── Component Layer ────────────────────────────────────────── */
+@layer components {
+  /* Inputs & selects */
+  .input-base {
+    @apply w-full px-4 py-3 bg-white border border-slate-200 rounded-input
+           text-sm text-slate-700 font-medium placeholder:text-slate-400
+           transition-all duration-200 ease-out
+           hover:border-slate-300
+           focus:border-primary focus:ring-2 focus:ring-primary/10 focus:outline-none;
+  }
+
+  .select-base {
+    @apply input-base appearance-none cursor-pointer pr-10;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2
+           px-5 py-2.5 bg-primary text-white text-sm font-semibold
+           rounded-btn shadow-btn
+           transition-all duration-200 ease-out
+           hover:bg-primary-dark hover:shadow-btn-hover hover:-translate-y-[1px]
+           active:translate-y-0 active:shadow-btn
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2
+           px-5 py-2.5 bg-white text-primary text-sm font-semibold
+           border border-primary/20 rounded-btn shadow-soft
+           transition-all duration-200 ease-out
+           hover:bg-primary-50 hover:border-primary/30 hover:-translate-y-[1px]
+           active:translate-y-0;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2
+           px-4 py-2 text-slate-500 text-sm font-medium
+           rounded-btn
+           transition-all duration-200 ease-out
+           hover:bg-slate-100 hover:text-slate-700;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2
+           px-5 py-2.5 bg-white text-status-danger text-sm font-semibold
+           border border-red-200 rounded-btn
+           transition-all duration-200 ease-out
+           hover:bg-red-50 hover:border-red-300;
+  }
+
+  /* Cards */
+  .card-base {
+    @apply bg-white rounded-card border border-slate-100 shadow-soft
+           transition-all duration-200 ease-out;
+  }
+
+  .card-hover {
+    @apply card-base hover:shadow-card hover:-translate-y-1;
+  }
+
+  /* Badges */
+  .badge {
+    @apply inline-flex items-center gap-1 px-2.5 py-1
+           text-[11px] font-semibold rounded-pill leading-none;
+  }
+
+  /* Section headers */
+  .section-label {
+    @apply text-[11px] font-semibold uppercase tracking-wider text-slate-400;
+  }
+
+  /* Sidebar link */
+  .sidebar-link {
+    @apply flex items-center gap-3 px-4 py-2.5 rounded-btn text-sm font-medium
+           text-slate-500 transition-all duration-200 ease-out
+           hover:bg-primary-50 hover:text-primary;
+  }
+
+  .sidebar-link-active {
+    @apply sidebar-link bg-primary-50 text-primary font-semibold shadow-soft;
+  }
+
+  /* Table */
+  .table-header {
+    @apply text-[11px] font-semibold uppercase tracking-wider text-slate-400
+           px-5 py-3.5 text-left bg-slate-50/80;
+  }
+
+  .table-cell {
+    @apply px-5 py-4 text-sm text-slate-600;
+  }
+}
+
+/* ── Utility Layer ──────────────────────────────────────────── */
+@layer utilities {
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 5px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 3px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: #cbd5e1;
+  }
+}
