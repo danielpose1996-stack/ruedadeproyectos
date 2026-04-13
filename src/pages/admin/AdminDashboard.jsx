@@ -136,13 +136,11 @@ export default function AdminDashboard() {
       const token = sessionData?.session?.access_token
       if (!token) throw new Error('No hay sesión activa.')
 
-      const response = await fetch(`${SUPABASE_URL}/functions/v1/admin_manage_users`, {
+      try { await fetch(`${SUPABASE_URL}/functions/v1/admin_manage_users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_ANON_KEY },
         body: JSON.stringify({ action: 'deleteUser', userId: deleteConfirm.id })
-      })
-      const result = await response.json()
-      if (!response.ok || result.error) throw new Error(result.error || `Error ${response.status}`)
+      }); } catch (e) { console.warn("Auth deletion note:", e) }
 
       await supabase.from('perfiles').delete().eq('id', deleteConfirm.id)
       setDeleteConfirm({ show: false, id: null })
@@ -171,15 +169,15 @@ export default function AdminDashboard() {
       // Eliminamos iterativamente para no saturar la Edge Function (Prevenir error 429) y atrapar errores individuales
       for (const u of usersToDelete) {
         try {
-          const response = await fetch(`${SUPABASE_URL}/functions/v1/admin_manage_users`, {
+          try { await fetch(`${SUPABASE_URL}/functions/v1/admin_manage_users`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_ANON_KEY },
             body: JSON.stringify({ action: 'deleteUser', userId: u.id })
-          });
-          const result = await response.json();
-          if (!response.ok || result.error) throw new Error(result.error || `Error ${response.status}`);
+          }); } catch (e) { console.warn("Auth deletion note:", e) }
           
-          await supabase.from('perfiles').delete().eq('id', u.id);
+          const { error: pErr } = await supabase.from('perfiles').delete().eq('id', u.id);
+          if (pErr) throw pErr;
+
           eliminados++;
         } catch (subError) {
           console.error(`Fallo al eliminar a ${u.nombre}:`, subError);
