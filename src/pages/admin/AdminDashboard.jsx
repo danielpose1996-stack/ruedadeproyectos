@@ -28,6 +28,7 @@ export default function AdminDashboard() {
   const [userError, setUserError] = useState('')
   const [userSubmitting, setUserSubmitting] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null })
+  const [deleteAllUsersConfirm, setDeleteAllUsersConfirm] = useState(false)
 
   // ─── PROJECTS ────
   const [projects, setProjects] = useState([])
@@ -41,15 +42,7 @@ export default function AdminDashboard() {
   const [projSubmitting, setProjSubmitting] = useState(false)
   const [docentes, setDocentes] = useState([])
   const [estudiantes, setEstudiantes] = useState([])
-
-  // ─── POSTULACIONES ────
-  const [postulaciones, setPostulaciones] = useState([])
-  const [postFilter, setPostFilter] = useState('')
-  const [showGestionar, setShowGestionar] = useState(false)
-  const [gPostData, setGPostData] = useState(null)
-  const [gDocente, setGDocente] = useState('')
-  const [gError, setGError] = useState('')
-  const [gSuccess, setGSuccess] = useState(false)
+  const [deleteAllProjectsConfirm, setDeleteAllProjectsConfirm] = useState(false)
 
   useEffect(() => { loadUsers() }, [])
 
@@ -157,6 +150,36 @@ export default function AdminDashboard() {
       console.error('deleteUser Error:', err)
       alert('Error al eliminar usuario: ' + err.message)
       setDeleteConfirm({ show: false, id: null })
+    }
+  }
+
+  async function handleDeleteAllUsers() {
+    setDeleteAllUsersConfirm(false)
+    setLoading(true)
+    try {
+      const { data: sessionData } = await supabase.auth.getSession()
+      const token = sessionData?.session?.access_token
+      if (!token) throw new Error('No hay sesión activa.')
+
+      // Identificamos todos los usuarios excepto el admin principal en sesión
+      const usersToDelete = users.filter(u => u.id !== profile.id)
+      
+      // Eliminamos usando iteración (Promise.all para hacerlo en paralelo)
+      await Promise.all(usersToDelete.map(u => 
+        fetch(`${SUPABASE_URL}/functions/v1/admin_manage_users`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_ANON_KEY },
+          body: JSON.stringify({ action: 'deleteUser', userId: u.id })
+        })
+      ))
+
+      loadUsers()
+      alert('Se eliminaron correctamente todos los usuarios, conservando solo al administrador principal.')
+    } catch (err) {
+      console.error('deleteAllUsers Error:', err)
+      alert('Error al realizar la eliminación masiva: ' + err.message)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -281,60 +304,29 @@ export default function AdminDashboard() {
     }
   }
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // POSTULACIONES TAB
-  // ═══════════════════════════════════════════════════════════════════════════
-  async function loadPostulaciones(filter = '') {
+  async function handleDeleteAllProjects() {
+    setDeleteAllProjectsConfirm(false)
     setLoading(true)
-    setPostFilter(filter)
     try {
-      let query = supabase.from('postulaciones')
-        .select(`*, estudiante:perfiles!postulaciones_estudiante_id_fkey (nombre), revisor:perfiles!postulaciones_docente_revisor_id_fkey (nombre)`)
-        .order('created_at', { ascending: false })
-      if (filter) query = query.eq('estado', filter)
-      const { data, error } = await query
-      if (error) throw error
-      setPostulaciones(data || [])
-    } catch (e) { console.error('loadPostulaciones Error:', e) }
-    finally { setLoading(false) }
-  }
-
-  async function openGestionar(id) {
-    setGError('')
-    setGSuccess(false)
-    setGDocente('')
-    try {
-      const { data: p, error } = await supabase.from('postulaciones')
-        .select(`*, estudiante:perfiles!postulaciones_estudiante_id_fkey (nombre), revisor:perfiles!postulaciones_docente_revisor_id_fkey (nombre)`)
-        .eq('id', id).single()
-      if (error) throw error
-
-      if (p.archivo_path) {
-        const { data: sd } = await supabase.storage.from('postulaciones-docs').createSignedUrl(p.archivo_path, 3600)
-        p._signedUrl = sd?.signedUrl || null
+      const projectIds = projects.map(p => p.id)
+      if (projectIds.length > 0) {
+        const { error } = await supabase.from('proyectos').delete().in('id', projectIds)
+        if (error) throw error
       }
-
-      await loadUsersForProjectModal() // to get docentes
-      setGPostData(p)
-      setShowGestionar(true)
-    } catch (e) { console.error(e) }
-  }
-
-  async function handleAsignarRevisor() {
-    if (!gDocente) { setGError('Selecciona un docente.'); return }
-    try {
-      const { error } = await supabase.from('postulaciones').update({ docente_revisor_id: gDocente, estado: 'En revisión' }).eq('id', gPostData.id)
-      if (error) throw error
-      setGSuccess(true)
-      loadPostulaciones(postFilter)
-    } catch (e) { setGError('Error: ' + (e.message || '')) }
+      loadProjects()
+      alert('Se eliminaron todos los proyectos correctamente.')
+    } catch (err) {
+      console.error('deleteAllProjects Error:', err)
+      alert('Error al realizar la eliminación masiva: ' + err.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   function switchTab(tab) {
     setActiveTab(tab)
     if (tab === 'users') loadUsers()
     else if (tab === 'projects') loadProjects()
-    else if (tab === 'postulaciones') loadPostulaciones('')
   }
 
   function handleLogout() { logout(); navigate('/') }
@@ -343,19 +335,12 @@ export default function AdminDashboard() {
     'Pendiente': 'bg-slate-100 text-slate-500 border-slate-200',
     'Evaluado': 'bg-primary/10 text-primary border-primary/20',
   }
-  const postEstado = {
-    'Pendiente de revisión': 'bg-amber-50 text-amber-600 border-amber-100',
-    'En revisión': 'bg-blue-50 text-blue-600 border-blue-100',
-    'Aprobado': 'bg-emerald-50 text-emerald-600 border-emerald-100',
-    'No aprobado': 'bg-red-50 text-status-danger border-red-100',
-  }
 
   const selectedEvIds = [projForm.ev1, projForm.ev2, projForm.ev3]
 
   const tabs = [
     { id: 'users', label: 'Gestión de Usuarios', icon: 'fa-users-gear' },
-    { id: 'projects', label: 'Gestión de Proyectos', icon: 'fa-diagram-project' },
-    { id: 'postulaciones', label: 'Postulaciones', icon: 'fa-inbox' },
+    { id: 'projects', label: 'Gestión de Proyectos', icon: 'fa-diagram-project' }
   ]
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -391,10 +376,16 @@ export default function AdminDashboard() {
           <div className="animate-fade-in">
             <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
               <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2"><span className="w-2 h-8 bg-primary rounded-full"></span> Gestión de Usuarios</h2>
-              <button onClick={() => { setUserForm({ nombre: '', email: '', password: '', rol: 'estudiante' }); setUserError(''); setShowCreateUser(true) }}
-                className="bg-primary text-white text-xs font-bold px-5 py-3 rounded-xl hover:bg-primary-dark shadow-lg shadow-primary/20 transition-all">
-                <i className="fa-solid fa-user-plus mr-2"></i> Nuevo Usuario
-              </button>
+              <div className="flex gap-3">
+                <button onClick={() => setDeleteAllUsersConfirm(true)}
+                  className="bg-red-50 text-status-danger border border-red-100 text-xs font-bold px-5 py-3 rounded-xl hover:bg-status-danger hover:text-white transition-all shadow-sm">
+                  <i className="fa-solid fa-trash-can mr-2"></i> Eliminar todos
+                </button>
+                <button onClick={() => { setUserForm({ nombre: '', email: '', password: '', rol: 'estudiante' }); setUserError(''); setShowCreateUser(true) }}
+                  className="bg-primary text-white text-xs font-bold px-5 py-3 rounded-xl hover:bg-primary-dark shadow-lg shadow-primary/20 transition-all">
+                  <i className="fa-solid fa-user-plus mr-2"></i> Nuevo Usuario
+                </button>
+              </div>
             </div>
 
             {/* Filters */}
@@ -430,7 +421,9 @@ export default function AdminDashboard() {
                       <td className="px-6 py-4 text-center">
                         <div className="flex items-center justify-center gap-1.5">
                           <button onClick={() => openEditUser(u.id)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-primary/5 text-primary hover:bg-primary hover:text-white transition-all" title="Editar"><i className="fa-solid fa-pen text-[10px]"></i></button>
-                          <button onClick={() => setDeleteConfirm({ show: true, id: u.id })} className="w-8 h-8 flex items-center justify-center rounded-lg bg-status-danger/5 text-status-danger hover:bg-status-danger hover:text-white transition-all" title="Eliminar"><i className="fa-solid fa-trash text-[10px]"></i></button>
+                          {u.id !== profile.id && (
+                            <button onClick={() => setDeleteConfirm({ show: true, id: u.id })} className="w-8 h-8 flex items-center justify-center rounded-lg bg-status-danger/5 text-status-danger hover:bg-status-danger hover:text-white transition-all" title="Eliminar"><i className="fa-solid fa-trash text-[10px]"></i></button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -446,9 +439,15 @@ export default function AdminDashboard() {
           <div className="animate-fade-in">
             <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
               <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2"><span className="w-2 h-8 bg-secondary rounded-full"></span> Gestión de Proyectos</h2>
-              <button onClick={openCreateProj} className="bg-primary text-white text-xs font-bold px-5 py-3 rounded-xl hover:bg-primary-dark shadow-lg shadow-primary/20 transition-all">
-                <i className="fa-solid fa-plus mr-2"></i> Nuevo Proyecto
-              </button>
+              <div className="flex gap-3">
+                <button onClick={() => setDeleteAllProjectsConfirm(true)}
+                  className="bg-red-50 text-status-danger border border-red-100 text-xs font-bold px-5 py-3 rounded-xl hover:bg-status-danger hover:text-white transition-all shadow-sm">
+                  <i className="fa-solid fa-trash-can mr-2"></i> Eliminar todos
+                </button>
+                <button onClick={openCreateProj} className="bg-primary text-white text-xs font-bold px-5 py-3 rounded-xl hover:bg-primary-dark shadow-lg shadow-primary/20 transition-all">
+                  <i className="fa-solid fa-plus mr-2"></i> Nuevo Proyecto
+                </button>
+              </div>
             </div>
 
             <div className="flex flex-wrap gap-4 mb-6">
@@ -497,54 +496,6 @@ export default function AdminDashboard() {
                       </tr>
                     )
                   })}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* ─── POSTULACIONES TAB ──────────────────────────────── */}
-        {activeTab === 'postulaciones' && (
-          <div className="animate-fade-in">
-            <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2"><span className="w-2 h-8 bg-amber-500 rounded-full"></span> Postulaciones de Estudiantes</h2>
-
-            <div className="flex flex-wrap gap-2 mb-6">
-              {[{ label: 'Todos', val: '' }, { label: 'Pendiente', val: 'Pendiente de revisión' }, { label: 'En revisión', val: 'En revisión' }, { label: 'Aprobado', val: 'Aprobado' }, { label: 'No aprobado', val: 'No aprobado' }]
-                .map(f => (
-                  <button key={f.val} onClick={() => loadPostulaciones(f.val)}
-                    className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all ${postFilter === f.val ? 'bg-primary text-white border-primary' : 'bg-surface text-slate-500 border-slate-100 hover:bg-slate-50'}`}>
-                    {f.label}
-                  </button>
-                ))}
-            </div>
-
-            <div className="bg-surface rounded-3xl border border-border-color shadow-sm overflow-hidden overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead><tr className="bg-slate-50/50 border-b border-border-color">
-                  <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Proyecto</th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Estudiante</th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Categoría</th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Fecha</th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Estado</th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Acción</th>
-                </tr></thead>
-                <tbody className="divide-y divide-border-color">
-                  {loading ? <tr><td colSpan={6}><LoadingSpinner /></td></tr> :
-                   postulaciones.length === 0 ? <tr><td colSpan={6} className="px-6 py-12 text-center text-slate-400 italic">No hay postulaciones registradas</td></tr> :
-                   postulaciones.map(p => (
-                    <tr key={p.id} className="hover:bg-slate-50/50 transition-colors group">
-                      <td className="px-6 py-4"><p className="font-bold text-slate-800 truncate max-w-[200px] group-hover:text-primary transition-colors">{p.nombre}</p></td>
-                      <td className="px-6 py-4 text-sm text-slate-600 font-medium">{p.estudiante?.nombre || '—'}</td>
-                      <td className="px-6 py-4 text-center"><span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${CATEGORY_STYLES[p.categoria] || 'bg-slate-100 text-slate-600'}`}>{p.categoria}</span></td>
-                      <td className="px-6 py-4 text-center text-sm text-slate-400">{new Date(p.created_at).toLocaleDateString('es-CO')}</td>
-                      <td className="px-6 py-4 text-center"><span className={`inline-flex items-center px-3 py-1 rounded-full border text-[9px] font-bold uppercase tracking-widest ${postEstado[p.estado] || 'bg-slate-50 text-slate-400 border-slate-100'}`}>{p.estado}</span></td>
-                      <td className="px-6 py-4 text-center">
-                        <button onClick={() => openGestionar(p.id)} className="px-4 py-2 rounded-xl bg-slate-100 text-slate-500 hover:bg-primary hover:text-white font-bold text-xs transition-all shadow-sm">
-                          <i className="fa-solid fa-gear mr-1"></i> Gestionar
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
                 </tbody>
               </table>
             </div>
@@ -615,48 +566,20 @@ export default function AdminDashboard() {
         </ModalShell>
       )}
 
-      {/* Gestionar Postulacion Modal */}
-      {showGestionar && gPostData && (
-        <ModalShell title="Gestionar Postulación" icon="fa-inbox" onClose={() => setShowGestionar(false)}>
-          <div className="space-y-6">
-            <div className="bg-slate-50 rounded-2xl p-6 space-y-4 border border-slate-100">
-              <div><p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Proyecto</p><h4 className="text-xl font-bold text-slate-800">{gPostData.nombre}</h4></div>
-              <div className="grid grid-cols-2 gap-4">
-                <div><p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Estudiante</p><p className="text-sm font-bold text-slate-700">{gPostData.estudiante?.nombre || '—'}</p></div>
-                <div><p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Estado</p><span className={`inline-flex px-3 py-1 rounded-full border text-[10px] font-bold uppercase tracking-widest ${postEstado[gPostData.estado] || ''}`}>{gPostData.estado}</span></div>
-                <div><p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Categoría</p><p className="text-sm font-bold text-slate-700">{gPostData.categoria}</p></div>
-                <div><p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Fecha</p><p className="text-sm font-bold text-slate-700">{new Date(gPostData.created_at).toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' })}</p></div>
-              </div>
-              <div><p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Revisor actual</p><p className="text-sm font-bold text-slate-700 flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>{gPostData.revisor?.nombre || 'Sin asignar'}</p></div>
-              {gPostData.observacion_docente && (
-                <div className="p-4 bg-white rounded-xl border-l-4 border-primary"><p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Observación del docente</p><p className="text-slate-700 font-medium">{gPostData.observacion_docente}</p></div>
-              )}
-              {gPostData._signedUrl && (
-                <a href={gPostData._signedUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-4 py-3 bg-white border border-blue-100 rounded-xl hover:bg-blue-50 text-primary font-bold text-sm transition-all">
-                  <i className="fa-solid fa-file-word"></i> Descargar documento
-                </a>
-              )}
-            </div>
-            <div className="space-y-3">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Asignar Docente Revisor</p>
-              <select value={gDocente} onChange={e => setGDocente(e.target.value)} className="w-full px-4 py-3 bg-bg-base border border-border-color rounded-xl font-medium appearance-none focus:ring-2 focus:ring-primary/20 outline-none">
-                <option value="">-- Selecciona un docente --</option>
-                {docentes.map(d => <option key={d.id} value={d.id}>{d.nombre}</option>)}
-              </select>
-              {gError && <ErrorBox text={gError} />}
-              {gSuccess && <div className="bg-emerald-50 text-status-success text-xs font-bold p-4 rounded-xl border border-emerald-100"><i className="fa-solid fa-circle-check mr-1"></i> Docente asignado exitosamente</div>}
-              <button onClick={handleAsignarRevisor} className="w-full bg-primary text-white font-bold py-4 rounded-xl hover:bg-primary-dark shadow-xl shadow-primary/20 transition-all">
-                Asignar y Enviar a Revisión
-              </button>
-            </div>
-          </div>
-        </ModalShell>
-      )}
-
       {/* Delete User Confirm */}
       <ConfirmModal isOpen={deleteConfirm.show} onClose={() => setDeleteConfirm({ show: false, id: null })} onConfirm={handleDeleteUser}
         title="Eliminar Usuario" message="¿Estás seguro de eliminar este usuario? Esta acción no se puede deshacer y se perderán todos los datos asociados."
         confirmText="Sí, eliminar" cancelText="Cancelar" />
+
+      {/* Delete All Users Confirm */}
+      <ConfirmModal isOpen={deleteAllUsersConfirm} onClose={() => setDeleteAllUsersConfirm(false)} onConfirm={handleDeleteAllUsers}
+        title="Eliminar Todos los Usuarios" message="¿Estás seguro de eliminar todos los usuarios? Esta acción conservará únicamente al administrador principal actual y no se puede deshacer."
+        confirmText="Sí, eliminar todos" cancelText="Cancelar" loading={loading} />
+
+      {/* Delete All Projects Confirm */}
+      <ConfirmModal isOpen={deleteAllProjectsConfirm} onClose={() => setDeleteAllProjectsConfirm(false)} onConfirm={handleDeleteAllProjects}
+        title="Eliminar Todos los Proyectos" message="¿Estás seguro de eliminar TODOS los proyectos? Esta acción eliminará registros y evaluaciones permanentemente, y no se puede deshacer."
+        confirmText="Sí, eliminar todos" cancelText="Cancelar" loading={loading} />
     </div>
   )
 }
