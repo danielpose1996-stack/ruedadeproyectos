@@ -156,6 +156,9 @@ export default function AdminDashboard() {
   async function handleDeleteAllUsers() {
     setDeleteAllUsersConfirm(false)
     setLoading(true)
+    let eliminados = 0;
+    let errores = 0;
+
     try {
       const { data: sessionData } = await supabase.auth.getSession()
       const token = sessionData?.session?.access_token
@@ -164,20 +167,34 @@ export default function AdminDashboard() {
       // Identificamos todos los usuarios excepto el admin principal en sesión
       const usersToDelete = users.filter(u => u.id !== profile.id)
       
-      // Eliminamos usando iteración (Promise.all para hacerlo en paralelo)
-      await Promise.all(usersToDelete.map(u => 
-        fetch(`${SUPABASE_URL}/functions/v1/admin_manage_users`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_ANON_KEY },
-          body: JSON.stringify({ action: 'deleteUser', userId: u.id })
-        })
-      ))
+      // Eliminamos iterativamente para no saturar la Edge Function (Prevenir error 429) y atrapar errores individuales
+      for (const u of usersToDelete) {
+        try {
+          const response = await fetch(`${SUPABASE_URL}/functions/v1/admin_manage_users`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_ANON_KEY },
+            body: JSON.stringify({ action: 'deleteUser', userId: u.id })
+          });
+          const result = await response.json();
+          if (!response.ok || result.error) throw new Error(result.error || `Error ${response.status}`);
+          
+          eliminados++;
+        } catch (subError) {
+          console.error(`Fallo al eliminar a ${u.nombre}:`, subError);
+          errores++;
+        }
+      }
 
       loadUsers()
-      alert('Se eliminaron correctamente todos los usuarios, conservando solo al administrador principal.')
+      
+      if (errores > 0) {
+        alert(`Se eliminaron ${eliminados} usuarios, pero hubo errores con ${errores} de ellos. Es posible que tengan registros en otras tablas impidiendo el borrado.`);
+      } else {
+        alert('Se eliminaron correctamente todos los usuarios, conservando solo al administrador principal.');
+      }
     } catch (err) {
       console.error('deleteAllUsers Error:', err)
-      alert('Error al realizar la eliminación masiva: ' + err.message)
+      alert('Error crítico al realizar la eliminación masiva: ' + err.message)
     } finally {
       setLoading(false)
     }
