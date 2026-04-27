@@ -11,7 +11,7 @@ export default function Footer() {
               <div className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center">
                 <i className="fa-solid fa-gear text-white text-xs"></i>
               </div>
-              <span className="text-base font-bold text-white tracking-tight">RuedaPro UNIPAZ</span>
+              <span className="text-base font-bold text-white tracking-tight">Rueda de Proyectos SISINFO</span>
             </div>
             <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
               Plataforma para la gestión, evaluación y publicación de la Rueda de Proyectos de Ingeniería Informática.

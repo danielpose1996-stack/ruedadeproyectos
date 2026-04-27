@@ -23,54 +23,59 @@ export default function HomePage() {
 
   return (
     <>
-      {/* Hero Section */}
-      <section className="relative bg-white py-16 md:py-24 overflow-hidden">
-        {/* Background decoration */}
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary-50 rounded-full -translate-y-1/3 translate-x-1/3 blur-3xl opacity-60"></div>
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-secondary-light rounded-full translate-y-1/2 -translate-x-1/3 blur-3xl opacity-40"></div>
+      {/* Hero Section — Full Screen with Background Image */}
+      <section
+        className="relative min-h-screen flex items-center justify-center -mt-16 pt-16 overflow-hidden"
+        style={{ backgroundImage: "url('/hero-bg.jpg')", backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}
+      >
+        {/* Dark gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/55 to-black/80 z-0"></div>
 
-        <div className="max-w-6xl mx-auto px-5 relative z-10">
-          <div className="flex flex-col lg:flex-row items-center gap-14">
-            {/* Text */}
-            <div className="flex-1 space-y-6 text-center lg:text-left max-w-xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-pill bg-primary-50 border border-primary-100 animate-fade-in">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-                <span className="text-[11px] font-semibold text-primary uppercase tracking-wider">Ingeniería Informática</span>
-              </div>
+        {/* Subtle animated accents */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse z-0"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-primary/8 rounded-full blur-3xl animate-pulse z-0" style={{ animationDelay: '1.5s' }}></div>
 
-              <h1 className="text-display text-slate-800 animate-slide-up-delay-1">
-                RuedaPro <span className="text-primary">UNIPAZ</span>
-              </h1>
+        {/* Hero Content */}
+        <div className="relative z-10 max-w-4xl mx-auto px-5 text-center space-y-8">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 animate-fade-in">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span className="text-[11px] font-semibold text-white/90 uppercase tracking-widest">Ingeniería de Sistemas e Informática</span>
+          </div>
 
-              <p className="text-lg text-slate-500 leading-relaxed animate-slide-up-delay-2">
-                Plataforma académica para la gestión, evaluación y proyección de la innovación tecnológica en la región.
-              </p>
+          {/* Title */}
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-[1.1] animate-slide-up-delay-1">
+            Rueda de Proyectos
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary-300 via-primary-200 to-emerald-300 mt-2">
+              SISINFO
+            </span>
+          </h1>
 
-              <div className="flex flex-wrap justify-center lg:justify-start gap-3 pt-2 animate-slide-up-delay-3">
-                <button className="btn-primary !px-6 !py-3" onClick={() => navigate('/resultados')}>
-                  <i className="fa-solid fa-trophy text-xs opacity-60"></i> Ver Resultados
-                </button>
-                <button className="btn-outline !px-6 !py-3" onClick={() => navigate('/login/estudiante')}>
-                  Ingreso Estudiantes
-                </button>
-              </div>
-            </div>
+          {/* Subtitle */}
+          <p className="text-lg md:text-xl text-white/70 leading-relaxed max-w-2xl mx-auto animate-slide-up-delay-2">
+            Plataforma académica para la gestión, evaluación y proyección de la innovación tecnológica en la región.
+          </p>
 
-            {/* Hero Visual */}
-            <div className="flex-1 w-full max-w-md animate-zoom-in">
-              <div className="relative">
-                <div className="bg-gradient-to-br from-primary-100 via-primary-50 to-white rounded-3xl aspect-[4/3] flex items-center justify-center border border-primary-100/50 shadow-card overflow-hidden group">
-                  <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 to-transparent"></div>
-                  <i className="fa-solid fa-network-wired text-7xl text-primary/15 group-hover:text-primary/25 transition-colors duration-700"></i>
-                  <div className="absolute bottom-5 left-5 right-5">
-                    <div className="bg-white/90 backdrop-blur-sm border border-slate-100 p-4 rounded-xl shadow-soft">
-                      <p className="section-label text-primary mb-0.5">Campus Virtual</p>
-                      <p className="text-sm font-semibold text-slate-700">Impulsando el Futuro Digital</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          {/* Buttons */}
+          <div className="flex flex-wrap justify-center gap-4 pt-2 animate-slide-up-delay-3">
+            <button
+              className="group flex items-center gap-2.5 bg-primary hover:bg-primary-700 text-white font-semibold px-8 py-3.5 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
+              onClick={() => navigate('/resultados')}
+            >
+              <i className="fa-solid fa-trophy text-sm opacity-70 group-hover:opacity-100 transition-opacity"></i>
+              Ver Resultados
+            </button>
+            <button
+              className="flex items-center gap-2.5 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-semibold px-8 py-3.5 rounded-xl border border-white/25 hover:border-white/40 hover:-translate-y-0.5 transition-all duration-300"
+              onClick={() => navigate('/login/estudiante')}
+            >
+              Ingreso Estudiantes
+            </button>
+          </div>
+
+          {/* Scroll indicator */}
+          <div className="pt-8 animate-bounce">
+            <i className="fa-solid fa-chevron-down text-white/30 text-lg"></i>
           </div>
         </div>
       </section>

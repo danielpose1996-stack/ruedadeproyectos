@@ -21,7 +21,7 @@ export default function App() {
       <div className="min-h-screen flex items-center justify-center bg-bg-base">
         <div className="text-center space-y-3">
           <div className="w-8 h-8 border-[3px] border-primary-200 border-t-primary rounded-full animate-spin mx-auto"></div>
-          <p className="section-label">Cargando RuedaPro...</p>
+          <p className="section-label">Cargando Rueda de Proyectos...</p>
         </div>
       </div>
     )

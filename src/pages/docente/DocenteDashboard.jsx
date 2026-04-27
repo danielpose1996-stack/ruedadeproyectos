@@ -139,7 +139,7 @@ export default function DocenteDashboard() {
       <main className="flex-grow p-6 md:p-8 bg-bg-base overflow-y-auto w-full">
         <div className="mb-8">
           <h1 className="text-heading text-slate-800">Hola, Prof. {docenteName}</h1>
-          <p className="text-sm text-slate-400 mt-1">Panel de Evaluación RuedaPro UNIPAZ</p>
+          <p className="text-sm text-slate-400 mt-1">Panel de Evaluación Rueda de Proyectos SISINFO</p>
         </div>
 
         {/* Stats */}

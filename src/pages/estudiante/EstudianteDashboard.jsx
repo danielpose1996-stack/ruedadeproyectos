@@ -129,7 +129,7 @@ export default function EstudianteDashboard() {
       <main className="flex-grow p-6 md:p-10 bg-bg-base overflow-y-auto w-full">
         <div className="mb-10">
           <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Hola, {studentName}</h1>
-          <p className="text-slate-500 mt-1 font-medium">Portal Estudiantil RuedaPro UNIPAZ</p>
+          <p className="text-slate-500 mt-1 font-medium">Portal Estudiantil Rueda de Proyectos SISINFO</p>
         </div>
 
         {/* Stats */}

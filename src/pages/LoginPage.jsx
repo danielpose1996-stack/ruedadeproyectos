@@ -130,7 +130,7 @@ export default function LoginPage() {
           </button>
 
           <div className="pt-4 text-center text-xs text-slate-300 border-t border-slate-100 mt-6">
-            RuedaPro UNIPAZ • Sistema de Gestión de Proyectos
+            Rueda de Proyectos SISINFO • Sistema de Gestión de Proyectos
           </div>
         </form>
       </div>

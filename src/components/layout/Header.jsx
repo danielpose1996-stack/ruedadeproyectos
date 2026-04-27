@@ -35,6 +35,7 @@ export default function Header() {
     navigate(`/dashboard/${profile.rol}`)
   }
 
+  const isHome = location.pathname === '/'
   const isActive = (path) => location.pathname === path
 
   const navLinks = [
@@ -44,7 +45,7 @@ export default function Header() {
   ]
 
   return (
-    <header className="bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-50">
+    <header className={`sticky top-0 z-50 transition-colors duration-300 ${isHome ? 'bg-black/20 backdrop-blur-md border-b border-white/10' : 'bg-white/95 backdrop-blur-md border-b border-slate-100'}`}>
       <div className="max-w-6xl mx-auto px-5 h-16 flex justify-between items-center">
         {/* Brand */}
         <Link to="/" className="flex items-center gap-2.5 group">
@@ -52,8 +53,8 @@ export default function Header() {
             <i className="fa-solid fa-gear text-white text-sm"></i>
           </div>
           <div className="leading-tight">
-            <span className="text-[15px] font-bold text-primary tracking-tight">RuedaPro</span>
-            <span className="text-[15px] font-medium text-slate-400 ml-1">UNIPAZ</span>
+            <span className={`text-[15px] font-bold tracking-tight ${isHome ? 'text-white' : 'text-primary'}`}>Rueda de Proyectos</span>
+            <span className={`text-[15px] font-medium ml-1 ${isHome ? 'text-white/70' : 'text-slate-400'}`}>SISINFO</span>
           </div>
         </Link>
 
@@ -65,22 +66,22 @@ export default function Header() {
               to={link.to}
               className={`px-3.5 py-2 rounded-btn text-sm font-medium transition-all duration-200 ${
                 isActive(link.to)
-                  ? 'text-primary bg-primary-50'
-                  : 'text-slate-500 hover:text-primary hover:bg-slate-50'
+                  ? isHome ? 'text-white bg-white/20' : 'text-primary bg-primary-50'
+                  : isHome ? 'text-white/80 hover:text-white hover:bg-white/10' : 'text-slate-500 hover:text-primary hover:bg-slate-50'
               }`}
             >
               {link.label}
             </Link>
           ))}
 
-          <div className="w-px h-6 bg-slate-150 mx-3"></div>
+          <div className={`w-px h-6 mx-3 ${isHome ? 'bg-white/20' : 'bg-slate-150'}`}></div>
 
           {!user ? (
             <div className="flex items-center gap-2">
-              <Link to="/login/docente" className="btn-ghost text-xs">
+              <Link to="/login/docente" className={`text-xs font-medium px-3 py-2 rounded-btn transition-colors ${isHome ? 'text-white/80 hover:text-white hover:bg-white/10' : 'btn-ghost'}`}>
                 Docente
               </Link>
-              <Link to="/login/estudiante" className="btn-primary text-xs !px-4 !py-2">
+              <Link to="/login/estudiante" className={`text-xs !px-4 !py-2 ${isHome ? 'bg-white/15 hover:bg-white/25 backdrop-blur-sm text-white font-semibold rounded-btn border border-white/25 transition-colors' : 'btn-primary'}`}>
                 Estudiante
               </Link>
             </div>
@@ -113,7 +114,7 @@ export default function Header() {
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden w-9 h-9 flex items-center justify-center rounded-btn text-slate-500 hover:bg-slate-50 transition-colors"
+          className={`md:hidden w-9 h-9 flex items-center justify-center rounded-btn transition-colors ${isHome ? 'text-white hover:bg-white/10' : 'text-slate-500 hover:bg-slate-50'}`}
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           <i className={`fa-solid ${mobileMenuOpen ? 'fa-xmark' : 'fa-bars'} text-lg`}></i>
