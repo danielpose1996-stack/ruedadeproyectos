@@ -40,7 +40,7 @@ export default function HomePage() {
           {/* Badge */}
           <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 animate-fade-in">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span className="text-[11px] font-semibold text-white/90 uppercase tracking-widest">Ingeniería de Sistemas e Informática</span>
+            <span className="text-[11px] font-semibold text-white/90 uppercase tracking-widest">Ingeniería Informática</span>
           </div>
 
           {/* Title */}
