@@ -92,11 +92,18 @@ export default function AdminDashboard() {
       if (!response.ok || result.error) throw new Error(result.error || `Error ${response.status}`)
 
       setShowCreateUser(false)
+      
+      // Actualización optimista: agregamos el usuario a la vista inmediatamente
+      setUsers(prev => [{
+        id: result.user.id,
+        nombre: escapeHTML(userForm.nombre),
+        rol: userForm.rol
+      }, ...prev].sort((a, b) => a.nombre.localeCompare(b.nombre)))
+
       setUserForm({ nombre: '', email: '', password: '', rol: 'estudiante' })
-      // Small delay to let the DB trigger create the profile row
-      await new Promise(r => setTimeout(r, 800))
-      await loadUsers()
-      alert('✅ Usuario creado exitosamente.')
+      
+      // Recargar en segundo plano
+      loadUsers()
     } catch (err) {
       setUserError(err.message || 'Error al crear usuario.')
       handleAuthError(err)
