@@ -52,6 +52,8 @@ export default function AdminDashboard() {
   const [estudiantes, setEstudiantes] = useState([])
   const [deleteAllProjectsConfirm, setDeleteAllProjectsConfirm] = useState(false)
 
+  const [loadError, setLoadError] = useState('')
+
   useEffect(() => { loadUsers() }, [])
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -59,16 +61,21 @@ export default function AdminDashboard() {
   // ═══════════════════════════════════════════════════════════════════════════
   async function loadUsers() {
     setLoading(true)
+    setLoadError('')
     try {
       const { data, error } = await supabase.from('perfiles').select('*').order('nombre')
       if (error) throw error
       setUsers(data || [])
-    } catch (e) { console.error('loadUsers Error:', e) }
+    } catch (e) { 
+      console.error('loadUsers Error:', e)
+      setLoadError(e.message || 'Error al cargar usuarios')
+    }
     finally { setLoading(false) }
   }
 
   const filteredUsers = users.filter(u => {
-    const matchSearch = u.nombre.toLowerCase().includes(userSearch.toLowerCase())
+    const userName = u?.nombre || ''
+    const matchSearch = userName.toLowerCase().includes(userSearch.toLowerCase())
     const matchRole = userRoleFilter ? u.rol === userRoleFilter : true
     return matchSearch && matchRole
   })
@@ -451,6 +458,7 @@ export default function AdminDashboard() {
                 </tr></thead>
                 <tbody className="divide-y divide-border-color">
                   {loading ? <tr><td colSpan={4}><LoadingSpinner /></td></tr> :
+                   loadError ? <tr><td colSpan={4} className="px-6 py-12 text-center text-red-500 font-medium">Error: {loadError}</td></tr> :
                    filteredUsers.length === 0 ? <tr><td colSpan={4} className="px-6 py-12 text-center text-slate-400 italic">No se encontraron usuarios</td></tr> :
                    filteredUsers.map(u => (
                     <tr key={u.id} className="hover:bg-slate-50/50 transition-colors group">
