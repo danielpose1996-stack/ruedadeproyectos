@@ -93,7 +93,10 @@ export default function AdminDashboard() {
 
       setShowCreateUser(false)
       setUserForm({ nombre: '', email: '', password: '', rol: 'estudiante' })
-      loadUsers()
+      // Small delay to let the DB trigger create the profile row
+      await new Promise(r => setTimeout(r, 800))
+      await loadUsers()
+      alert('✅ Usuario creado exitosamente.')
     } catch (err) {
       setUserError(err.message || 'Error al crear usuario.')
       handleAuthError(err)
