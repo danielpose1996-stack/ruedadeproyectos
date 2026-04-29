@@ -498,12 +498,13 @@ export default function AdminDashboard() {
                   <th className="px-4 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Categoría</th>
                   <th className="px-4 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Periodo</th>
                   <th className="px-4 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Evaluadores</th>
+                  <th className="px-4 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Ficha</th>
                   <th className="px-4 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Estado</th>
                   <th className="px-4 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Acciones</th>
                 </tr></thead>
                 <tbody className="divide-y divide-border-color">
-                  {loading ? <tr><td colSpan={6}><LoadingSpinner /></td></tr> :
-                   filteredProjects.length === 0 ? <tr><td colSpan={6} className="px-6 py-12 text-center text-slate-400 italic">No se encontraron proyectos</td></tr> :
+                  {loading ? <tr><td colSpan={7}><LoadingSpinner /></td></tr> :
+                   filteredProjects.length === 0 ? <tr><td colSpan={7} className="px-6 py-12 text-center text-slate-400 italic">No se encontraron proyectos</td></tr> :
                    filteredProjects.map(p => {
                     const evalNames = (p.proyecto_evaluadores || []).filter(pe => pe.perfiles).map(pe => pe.perfiles.nombre)
                     return (
@@ -515,6 +516,15 @@ export default function AdminDashboard() {
                           {evalNames.length === 0 ? <span className="text-[9px] italic text-slate-400">Sin asignar</span> :
                            evalNames.map((n, i) => <span key={i} className="px-2 py-0.5 bg-slate-100 text-slate-500 text-[9px] font-bold rounded-lg truncate max-w-[100px]">{n}</span>)}
                         </div></td>
+                        <td className="px-4 py-4 text-center">
+                          {p.ficha_path ? (
+                            <button onClick={async () => { const { data: sd } = await supabase.storage.from('fichas-inscripcion').createSignedUrl(p.ficha_path, 3600); if (sd?.signedUrl) window.open(sd.signedUrl, '_blank') }} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-bold hover:bg-blue-100 transition-all border border-blue-100" title="Descargar ficha">
+                              <i className="fa-solid fa-file-arrow-down"></i> Descargar
+                            </button>
+                          ) : (
+                            <span className="text-[9px] italic text-slate-400">Sin ficha</span>
+                          )}
+                        </td>
                         <td className="px-4 py-4 text-center"><span className={`inline-flex items-center px-3 py-1 rounded-full border text-[9px] font-bold uppercase tracking-widest ${estadoStyles[p.estado] || 'bg-slate-50 text-slate-400 border-slate-100'}`}>{p.estado}</span></td>
                         <td className="px-4 py-4 text-center">
                           <div className="flex items-center justify-center gap-1.5">

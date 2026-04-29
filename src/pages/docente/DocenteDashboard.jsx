@@ -18,10 +18,13 @@ export default function DocenteDashboard() {
   // Form state for registering projects
   const [formName, setFormName] = useState('')
   const [formCategory, setFormCategory] = useState('Propuesta')
-  const [formDesc, setFormDesc] = useState('')
+  const [formStudent, setFormStudent] = useState('')
+  const [formFile, setFormFile] = useState(null)
   const [formSubmitting, setFormSubmitting] = useState(false)
   const [formError, setFormError] = useState('')
   const [formSuccess, setFormSuccess] = useState('')
+  const [estudiantes, setEstudiantes] = useState([])
+  const [studentsLoading, setStudentsLoading] = useState(false)
 
   useEffect(() => { loadProjects() }, [])
 
@@ -41,28 +44,64 @@ export default function DocenteDashboard() {
   const pendientes = assignments.filter(a => a.proyectos && !a.proyectos.evaluaciones?.find(e => e.evaluador_id === profile.id))
   const enviadas = assignments.filter(a => a.proyectos && a.proyectos.evaluaciones?.find(e => e.evaluador_id === profile.id))
 
+  async function loadEstudiantes() {
+    setStudentsLoading(true)
+    try {
+      const { data, error } = await supabase
+        .from('perfiles')
+        .select('id, nombre')
+        .eq('rol', 'estudiante')
+        .order('nombre')
+      if (error) throw error
+      setEstudiantes(data || [])
+    } catch (e) { console.error('loadEstudiantes Error:', e) }
+    finally { setStudentsLoading(false) }
+  }
+
+  function switchTab(tab) {
+    setActiveTab(tab)
+    if (tab === 'registrar') loadEstudiantes()
+  }
+
   async function handleRegisterProject(e) {
     e.preventDefault()
     setFormError('')
     setFormSuccess('')
-    if (!formName.trim()) { setFormError('El nombre del proyecto es obligatorio.'); return }
+    if (!formName.trim()) { setFormError('El título del proyecto es obligatorio.'); return }
+    if (!formStudent) { setFormError('Debe seleccionar un estudiante líder.'); return }
+    if (!formFile) { setFormError('Debe adjuntar la ficha de inscripción (.docx o .pdf).'); return }
+    if (formFile.size > 15 * 1024 * 1024) { setFormError('El archivo no debe superar los 15 MB.'); return }
     setFormSubmitting(true)
     try {
+      // Upload ficha de inscripción
+      const fileExt = formFile.name.split('.').pop()
+      const fileName = `${Date.now()}_${profile.id}.${fileExt}`
+      const { error: uploadErr } = await supabase.storage.from('fichas-inscripcion').upload(fileName, formFile)
+      if (uploadErr) throw uploadErr
+
       const now = new Date()
-      const { error: projErr } = await supabase.from('proyectos').insert([{
+      const { data: projData, error: projErr } = await supabase.from('proyectos').insert([{
         nombre: escapeHTML(formName),
         categoria: formCategory,
-        descripcion: formDesc ? escapeHTML(formDesc) : null,
         semestre: now.getMonth() < 6 ? 1 : 2,
         anio: now.getFullYear(),
         estado: 'Pendiente',
-      }])
+        ficha_path: fileName,
+      }]).select().single()
       if (projErr) throw projErr
 
-      setFormSuccess('¡Proyecto registrado exitosamente!')
+      // Vincular estudiante líder al proyecto
+      const { error: studErr } = await supabase.from('proyecto_estudiantes').insert([{
+        proyecto_id: projData.id,
+        estudiante_id: formStudent,
+      }])
+      if (studErr) throw studErr
+
+      setFormSuccess('¡Proyecto registrado exitosamente! Ahora el administrador podrá asignar los docentes calificadores.')
       setFormName('')
       setFormCategory('Propuesta')
-      setFormDesc('')
+      setFormStudent('')
+      setFormFile(null)
     } catch (e) {
       console.error('handleRegisterProject Error:', e)
       setFormError('Error al registrar el proyecto: ' + (e.message || ''))
@@ -84,7 +123,7 @@ export default function DocenteDashboard() {
       <aside className="w-full md:w-60 bg-white border-r border-slate-100 p-4 flex flex-col gap-1 shrink-0">
         <nav className="flex flex-col gap-0.5 flex-grow">
           {tabs.map(t => (
-            <button key={t.id} onClick={() => setActiveTab(t.id)}
+            <button key={t.id} onClick={() => switchTab(t.id)}
               className={activeTab === t.id ? 'sidebar-link-active' : 'sidebar-link'}>
               <i className={`fa-solid ${t.icon} text-sm opacity-60`}></i> {t.label}
             </button>
@@ -201,36 +240,168 @@ export default function DocenteDashboard() {
         {activeTab === 'registrar' && (
           <div className="animate-fade-in max-w-3xl">
             <h2 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2"><span className="w-2 h-8 bg-blue-500 rounded-full"></span> Registrar Nuevo Proyecto</h2>
-            <div className="bg-surface p-8 rounded-3xl shadow-premium border border-border-color">
-              <form onSubmit={handleRegisterProject} className="space-y-6">
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2 ml-1">Nombre del Proyecto</label>
-                  <input type="text" value={formName} onChange={e => setFormName(e.target.value)} required placeholder="Ej: Sistema inteligente de monitoreo agrícola..."
-                    className="w-full px-5 py-3 bg-bg-base border border-border-color rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium" />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2 ml-1">Tipo de Proyecto</label>
-                  <select value={formCategory} onChange={e => setFormCategory(e.target.value)}
-                    className="w-full px-5 py-3 bg-bg-base border border-border-color rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium appearance-none">
-                    <option value="Propuesta">Propuesta</option>
-                    <option value="Desarrollo">Desarrollo</option>
-                    <option value="Aplicación">Aplicación</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2 ml-1">Descripción (Opcional)</label>
-                  <textarea value={formDesc} onChange={e => setFormDesc(e.target.value)} rows={5} placeholder="Describa brevemente los objetivos y alcance del proyecto..."
-                    className="w-full px-5 py-3 bg-bg-base border border-border-color rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium resize-none" />
+            <div className="bg-surface p-8 md:p-10 rounded-3xl shadow-premium border border-border-color relative overflow-hidden">
+              {/* Decorative accent */}
+              <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full -mr-24 -mt-24 blur-3xl"></div>
+
+              <div className="relative z-10">
+                <div className="flex items-center gap-4 mb-8 pb-6 border-b border-slate-100">
+                  <div className="w-14 h-14 rounded-2xl bg-primary-light flex items-center justify-center text-primary text-2xl shadow-sm">
+                    <i className="fa-solid fa-file-circle-plus"></i>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-800 tracking-tight">Formulario de Registro</h3>
+                    <p className="text-sm text-slate-400 mt-0.5">Complete los datos del proyecto para registrarlo en el sistema</p>
+                  </div>
                 </div>
 
-                {formError && <div className="bg-red-50 text-status-danger text-xs font-semibold p-4 rounded-xl border border-red-100"><i className="fa-solid fa-circle-exclamation mr-1"></i> {formError}</div>}
-                {formSuccess && <div className="bg-emerald-50 text-status-success text-xs font-semibold p-4 rounded-xl border border-emerald-100"><i className="fa-solid fa-circle-check mr-1"></i> {formSuccess}</div>}
+                <form onSubmit={handleRegisterProject} className="space-y-6">
+                  {/* Título del Proyecto */}
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2 ml-1">
+                      <i className="fa-solid fa-heading mr-2 text-xs text-primary opacity-60"></i>Título del Proyecto
+                    </label>
+                    <input
+                      type="text"
+                      value={formName}
+                      onChange={e => setFormName(e.target.value)}
+                      required
+                      placeholder="Ingrese el título completo del proyecto..."
+                      className="w-full px-5 py-3.5 bg-bg-base border border-border-color rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium"
+                    />
+                  </div>
 
-                <button type="submit" disabled={formSubmitting}
-                  className="w-full bg-primary text-white font-bold py-4 rounded-xl hover:bg-primary-dark shadow-xl shadow-primary/20 transform hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-50">
-                  {formSubmitting ? 'Registrando...' : 'Registrar Proyecto'} <i className="fa-solid fa-plus ml-2 opacity-50"></i>
-                </button>
-              </form>
+                  {/* Tipo de Proyecto */}
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2 ml-1">
+                      <i className="fa-solid fa-layer-group mr-2 text-xs text-primary opacity-60"></i>Tipo de Proyecto
+                    </label>
+                    <div className="grid grid-cols-3 gap-3">
+                      {[
+                        { value: 'Propuesta', label: 'Propuesta', icon: 'fa-lightbulb', color: 'amber' },
+                        { value: 'Desarrollo', label: 'Desarrollo', icon: 'fa-code', color: 'blue' },
+                        { value: 'Aplicación', label: 'Aplicación', icon: 'fa-rocket', color: 'emerald' },
+                      ].map(type => (
+                        <button
+                          key={type.value}
+                          type="button"
+                          onClick={() => setFormCategory(type.value)}
+                          className={`p-4 rounded-xl border-2 text-center transition-all transform hover:-translate-y-0.5 ${
+                            formCategory === type.value
+                              ? `border-${type.color}-400 bg-${type.color}-50 shadow-lg shadow-${type.color}-100/50`
+                              : 'border-slate-100 bg-bg-base hover:border-slate-200'
+                          }`}
+                        >
+                          <i className={`fa-solid ${type.icon} text-xl mb-2 block ${
+                            formCategory === type.value ? `text-${type.color}-500` : 'text-slate-300'
+                          }`}></i>
+                          <span className={`text-xs font-bold uppercase tracking-wider ${
+                            formCategory === type.value ? `text-${type.color}-700` : 'text-slate-400'
+                          }`}>{type.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Estudiante Líder */}
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2 ml-1">
+                      <i className="fa-solid fa-user-graduate mr-2 text-xs text-primary opacity-60"></i>Estudiante Líder del Proyecto
+                    </label>
+                    {studentsLoading ? (
+                      <div className="px-5 py-3.5 bg-bg-base border border-border-color rounded-xl text-slate-400 text-sm italic">
+                        <i className="fa-solid fa-spinner fa-spin mr-2"></i>Cargando estudiantes...
+                      </div>
+                    ) : (
+                      <select
+                        value={formStudent}
+                        onChange={e => setFormStudent(e.target.value)}
+                        required
+                        className="w-full px-5 py-3.5 bg-bg-base border border-border-color rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium appearance-none"
+                      >
+                        <option value="">-- Seleccionar estudiante --</option>
+                        {estudiantes.map(est => (
+                          <option key={est.id} value={est.id}>{est.nombre}</option>
+                        ))}
+                      </select>
+                    )}
+                    <p className="text-[10px] font-bold text-slate-400 mt-1.5 ml-1 uppercase tracking-widest">
+                      <i className="fa-solid fa-circle-info mr-1 opacity-60"></i>Seleccione el estudiante responsable del proyecto
+                    </p>
+                  </div>
+
+                  {/* Ficha de Inscripción */}
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2 ml-1">
+                      <i className="fa-solid fa-file-word mr-2 text-xs text-primary opacity-60"></i>Ficha de Inscripción
+                    </label>
+                    <div className={`relative border-2 border-dashed rounded-xl p-6 text-center transition-all ${
+                      formFile ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-200 bg-bg-base hover:border-primary/40'
+                    }`}>
+                      {formFile ? (
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-500">
+                              <i className="fa-solid fa-file-word"></i>
+                            </div>
+                            <div className="text-left">
+                              <p className="text-sm font-bold text-slate-700 truncate max-w-[250px]">{formFile.name}</p>
+                              <p className="text-[10px] text-slate-400 font-medium">{(formFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                            </div>
+                          </div>
+                          <button type="button" onClick={() => setFormFile(null)} className="w-8 h-8 rounded-lg bg-red-50 text-status-danger hover:bg-status-danger hover:text-white transition-all flex items-center justify-center">
+                            <i className="fa-solid fa-xmark text-xs"></i>
+                          </button>
+                        </div>
+                      ) : (
+                        <label className="cursor-pointer block">
+                          <i className="fa-solid fa-cloud-arrow-up text-3xl text-slate-300 mb-2 block"></i>
+                          <p className="text-sm font-semibold text-slate-500">Haz clic para seleccionar el archivo</p>
+                          <p className="text-[10px] text-slate-400 mt-1">Formatos: DOCX, DOC, PDF — Máximo 15 MB</p>
+                          <input type="file" accept=".pdf,.docx,.doc" className="hidden" onChange={e => setFormFile(e.target.files?.[0] || null)} />
+                        </label>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Messages */}
+                  {formError && (
+                    <div className="bg-red-50 text-status-danger text-xs font-semibold p-4 rounded-xl border border-red-100 flex items-center gap-2">
+                      <i className="fa-solid fa-circle-exclamation"></i> {formError}
+                    </div>
+                  )}
+                  {formSuccess && (
+                    <div className="bg-emerald-50 text-status-success text-sm font-semibold p-5 rounded-xl border border-emerald-100 flex items-start gap-3">
+                      <i className="fa-solid fa-circle-check mt-0.5"></i>
+                      <span>{formSuccess}</span>
+                    </div>
+                  )}
+
+                  {/* Submit */}
+                  <button
+                    type="submit"
+                    disabled={formSubmitting}
+                    className="w-full bg-primary text-white font-bold py-4 rounded-xl hover:bg-primary-dark shadow-xl shadow-primary/20 transform hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-3"
+                  >
+                    <i className={`fa-solid ${formSubmitting ? 'fa-spinner fa-spin' : 'fa-paper-plane'} opacity-60`}></i>
+                    {formSubmitting ? 'Registrando proyecto...' : 'Registrar Proyecto'}
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            {/* Info card */}
+            <div className="mt-6 bg-blue-50/50 border border-blue-100 rounded-2xl p-5 flex items-start gap-4">
+              <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-500 shrink-0">
+                <i className="fa-solid fa-info"></i>
+              </div>
+              <div>
+                <p className="text-sm font-bold text-blue-800 mb-1">¿Qué sucede después?</p>
+                <p className="text-xs text-blue-600 leading-relaxed">
+                  Una vez registrado, el proyecto aparecerá en el panel del administrador en <strong>Gestión de Proyectos</strong>, 
+                  donde se asignarán los docentes calificadores correspondientes para iniciar el proceso de evaluación.
+                </p>
+              </div>
             </div>
           </div>
         )}
