@@ -14,6 +14,7 @@ export default function EstudianteDashboard() {
   const [activeTab, setActiveTab] = useState('evaluaciones')
   const [projects, setProjects] = useState([])
   const [loading, setLoading] = useState(true)
+  const [selectedProject, setSelectedProject] = useState(null)
 
   useEffect(() => { loadStudentProjects() }, [])
 
@@ -113,16 +114,6 @@ export default function EstudianteDashboard() {
                       <tr key={p.id} className="hover:bg-slate-50/50 transition-colors">
                         <td className="px-6 py-4">
                           <p className="font-bold text-slate-800">{p.nombre}</p>
-                          {isEvaluated && p.evaluaciones?.some(e => e.observaciones?.trim()) && (
-                            <div className="mt-2 space-y-1.5">
-                              {p.evaluaciones.filter(e => e.observaciones?.trim()).map((e, i) => (
-                                <div key={i} className="flex gap-2 text-xs text-slate-600 bg-slate-50 p-2.5 rounded-lg border border-slate-200/60">
-                                  <i className="fa-solid fa-comment-dots mt-0.5 opacity-40 text-primary"></i>
-                                  <p className="italic leading-relaxed">"{e.observaciones}"</p>
-                                </div>
-                              ))}
-                            </div>
-                          )}
                         </td>
                         <td className="px-6 py-4"><span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${CATEGORY_STYLES[p.categoria] || 'bg-slate-100 text-slate-600'}`}>{p.categoria}</span></td>
                         <td className="px-6 py-4 text-sm font-medium text-slate-500">{p.semestre}° / {p.anio}</td>
@@ -132,11 +123,22 @@ export default function EstudianteDashboard() {
                           </span>
                         </td>
                         <td className="px-6 py-4 text-right">
-                          {avgScore ? (
-                            <span className="w-10 h-10 rounded-xl bg-primary-light text-primary flex items-center justify-center font-black shadow-sm inline-flex">{avgScore}</span>
-                          ) : (
-                            <span className="text-xs text-slate-400 italic">—</span>
-                          )}
+                          <div className="flex items-center justify-end gap-3">
+                            {isEvaluated && p.evaluaciones?.length > 0 && (
+                              <button
+                                onClick={() => setSelectedProject(p)}
+                                className="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 hover:bg-primary-light hover:text-primary flex items-center justify-center transition-all shadow-sm group"
+                                title="Ver Observaciones"
+                              >
+                                <i className="fa-solid fa-comment-dots group-hover:scale-110 transition-transform"></i>
+                              </button>
+                            )}
+                            {avgScore ? (
+                              <span className="w-10 h-10 rounded-xl bg-primary-light text-primary flex items-center justify-center font-black shadow-sm inline-flex">{avgScore}</span>
+                            ) : (
+                              <span className="text-xs text-slate-400 italic">—</span>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     )
@@ -180,6 +182,45 @@ export default function EstudianteDashboard() {
           </div>
         )}
       </main>
+
+      {/* Modal Detalles Evaluacion */}
+      {selectedProject && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden animate-slide-up-delay-1 border border-border-color flex flex-col max-h-[90vh]">
+            <div className="flex items-center justify-between p-6 border-b border-border-color bg-slate-50 shrink-0">
+              <div>
+                <h3 className="text-xl font-bold text-slate-800 tracking-tight">Detalles de Evaluación</h3>
+                <p className="text-sm font-medium text-slate-500 mt-1">{selectedProject.nombre}</p>
+              </div>
+              <button onClick={() => setSelectedProject(null)} className="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:bg-slate-200 hover:text-slate-600 transition-colors">
+                <i className="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto space-y-4 flex-grow">
+              {selectedProject.evaluaciones?.map((e, i) => (
+                <div key={i} className="bg-slate-50 rounded-2xl border border-slate-200 p-5">
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Jurado {i + 1}</span>
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-primary-light text-primary">
+                      <i className="fa-solid fa-star text-[10px]"></i> {parseFloat(e.puntaje_final || 0).toFixed(1)}
+                    </span>
+                  </div>
+                  {e.observaciones?.trim() ? (
+                    <p className="text-sm text-slate-600 italic leading-relaxed border-l-2 border-primary-300 pl-3">"{e.observaciones}"</p>
+                  ) : (
+                    <p className="text-sm text-slate-400 italic">Sin observaciones específicas.</p>
+                  )}
+                </div>
+              ))}
+            </div>
+            <div className="p-6 border-t border-border-color bg-slate-50 flex justify-end shrink-0">
+              <button onClick={() => setSelectedProject(null)} className="px-6 py-2.5 bg-slate-800 text-white font-semibold rounded-xl hover:bg-slate-700 transition-colors">
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
