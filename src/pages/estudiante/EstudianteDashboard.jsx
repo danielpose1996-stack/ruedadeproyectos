@@ -22,7 +22,7 @@ export default function EstudianteDashboard() {
     try {
       const { data, error } = await supabase
         .from('proyecto_estudiantes')
-        .select(`proyecto_id, proyectos ( id, nombre, categoria, semestre, anio, estado, evaluaciones ( puntaje_final ) )`)
+        .select(`proyecto_id, proyectos ( id, nombre, categoria, semestre, anio, estado, evaluaciones ( puntaje_final, observaciones ) )`)
         .eq('estudiante_id', profile.id)
       if (error) throw error
       setProjects(data || [])
@@ -111,7 +111,19 @@ export default function EstudianteDashboard() {
                     const isEvaluated = p.estado === 'Evaluado'
                     return (
                       <tr key={p.id} className="hover:bg-slate-50/50 transition-colors">
-                        <td className="px-6 py-4"><p className="font-bold text-slate-800">{p.nombre}</p></td>
+                        <td className="px-6 py-4">
+                          <p className="font-bold text-slate-800">{p.nombre}</p>
+                          {isEvaluated && p.evaluaciones?.some(e => e.observaciones?.trim()) && (
+                            <div className="mt-2 space-y-1.5">
+                              {p.evaluaciones.filter(e => e.observaciones?.trim()).map((e, i) => (
+                                <div key={i} className="flex gap-2 text-xs text-slate-600 bg-slate-50 p-2.5 rounded-lg border border-slate-200/60">
+                                  <i className="fa-solid fa-comment-dots mt-0.5 opacity-40 text-primary"></i>
+                                  <p className="italic leading-relaxed">"{e.observaciones}"</p>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </td>
                         <td className="px-6 py-4"><span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${CATEGORY_STYLES[p.categoria] || 'bg-slate-100 text-slate-600'}`}>{p.categoria}</span></td>
                         <td className="px-6 py-4 text-sm font-medium text-slate-500">{p.semestre}° / {p.anio}</td>
                         <td className="px-6 py-4 text-sm">
