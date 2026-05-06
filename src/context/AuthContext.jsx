@@ -22,27 +22,27 @@ export function AuthProvider({ children }) {
         const currentUser = session.user
         setUser(currentUser)
 
-        const userMeta = currentUser.user_metadata || {}
-        let profileData = {
-          id: currentUser.id,
-          nombre: userMeta.nombre || currentUser.email,
-          rol: userMeta.rol || 'estudiante',
-        }
-
-        // Override with actual DB values
-        const { data: pData } = await supabase
+        // SECURITY: Always get role from the database (perfiles table),
+        // NEVER from user_metadata which is user-editable
+        const { data: pData, error: profileError } = await supabase
           .from('perfiles')
           .select('nombre, rol, avatar_url')
           .eq('id', currentUser.id)
           .single()
 
-        if (pData) {
-          if (pData.nombre) profileData.nombre = pData.nombre
-          if (pData.rol) profileData.rol = pData.rol
-          if (pData.avatar_url) profileData.avatar_url = pData.avatar_url
+        if (profileError || !pData) {
+          // If we can't verify the role from DB, do not grant any access
+          console.error('Could not load profile from DB:', profileError?.message)
+          setProfile(null)
+          return
         }
 
-        setProfile(profileData)
+        setProfile({
+          id: currentUser.id,
+          nombre: pData.nombre || currentUser.email,
+          rol: pData.rol,
+          avatar_url: pData.avatar_url || null,
+        })
       }
     } catch (e) {
       console.error('Session restore err:', e)
@@ -64,24 +64,25 @@ export function AuthProvider({ children }) {
     const currentUser = authData.user
     setUser(currentUser)
 
-    const userMeta = currentUser.user_metadata || {}
-    let profileData = {
-      id: currentUser.id,
-      nombre: userMeta.nombre || currentUser.email,
-      rol: userMeta.rol || 'estudiante',
-    }
-
-    // Override with DB data
-    const { data: pData } = await supabase
+    // SECURITY: Always get role from the database, never from user_metadata
+    const { data: pData, error: profileError } = await supabase
       .from('perfiles')
       .select('nombre, rol, avatar_url')
       .eq('id', currentUser.id)
       .single()
 
-    if (pData) {
-      if (pData.nombre) profileData.nombre = pData.nombre
-      if (pData.rol) profileData.rol = pData.rol
-      if (pData.avatar_url) profileData.avatar_url = pData.avatar_url
+    if (profileError || !pData) {
+      await supabase.auth.signOut()
+      setUser(null)
+      setProfile(null)
+      throw new Error('No se pudo verificar tu perfil. Contacta al administrador.')
+    }
+
+    const profileData = {
+      id: currentUser.id,
+      nombre: pData.nombre || currentUser.email,
+      rol: pData.rol,
+      avatar_url: pData.avatar_url || null,
     }
 
     // Verify role matches

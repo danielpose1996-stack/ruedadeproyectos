@@ -9,6 +9,12 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: false
+    sourcemap: false,
+    // SECURITY: Strip console logs in production to prevent
+    // leaking internal error details (table names, query structures)
+    minify: 'esbuild',
+  },
+  esbuild: {
+    drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
   }
 })
