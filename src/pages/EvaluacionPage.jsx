@@ -23,10 +23,7 @@ export default function EvaluacionPage() {
   const [timeRemaining, setTimeRemaining] = useState(24 * 60 * 60)
   const timerRef = useRef(null)
 
-  // Total sobre 50 (10 criterios × máximo 5 c/u)
-  const totalScore = scores.reduce((a, b) => a + b, 0)
-  // Promedio sobre 5 — se guarda en puntaje_final para compatibilidad con registros existentes
-  const finalScore = totalScore / scores.length
+  const finalScore = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0
 
   useEffect(() => {
     loadProject()
@@ -69,7 +66,7 @@ export default function EvaluacionPage() {
   }
 
   async function handleSubmit() {
-    if (totalScore <= 0) {
+    if (finalScore <= 0) {
       alert('Debe calificar al menos un criterio antes de enviar.')
       return
     }
@@ -221,13 +218,9 @@ export default function EvaluacionPage() {
           <div className="bg-slate-900 rounded-3xl p-10 flex flex-col justify-between h-full shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
             <div>
-              <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-2">Puntaje Total</p>
-              <h3 className="text-white font-black text-xl mb-4">Total sobre 50</h3>
-              <div className="flex items-end gap-1 mb-2">
-                <span className="text-7xl font-black text-primary tracking-tighter leading-none">{totalScore.toFixed(1)}</span>
-                <span className="text-2xl font-black text-slate-500 mb-2">/50</span>
-              </div>
-              <p className="text-[10px] text-slate-500 mb-6">Promedio: <span className="text-white font-bold">{finalScore.toFixed(2)}</span> / 5.0</p>
+              <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-2">Puntaje Final</p>
+              <h3 className="text-white font-black text-xl mb-4">Promedio General</h3>
+              <div className="text-7xl font-black text-primary tracking-tighter mb-8">{finalScore.toFixed(1)}</div>
             </div>
             <button
               onClick={() => setShowConfirm(true)}
