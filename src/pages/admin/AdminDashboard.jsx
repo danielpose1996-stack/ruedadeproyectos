@@ -6,6 +6,7 @@ import { escapeHTML, validateUnipazEmail } from '../../utils/helpers'
 import { CATEGORY_STYLES, ROLE_BADGE_STYLES } from '../../utils/constants'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import ConfirmModal from '../../components/ui/ConfirmModal'
+import InformesTab from './InformesTab'
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -45,7 +46,7 @@ export default function AdminDashboard() {
   const [showCreateProj, setShowCreateProj] = useState(false)
   const [showEditProj, setShowEditProj] = useState(false)
   const [editProjId, setEditProjId] = useState(null)
-  const [projForm, setProjForm] = useState({ nombre: '', categoria: 'Desarrollo', semestre: 1, anio: 2026, ev1: '', ev2: '', ev3: '', student: '' })
+  const [projForm, setProjForm] = useState({ nombre: '', categoria: 'Desarrollo', semestre: 1, anio: 2026, ev1: '', ev2: '', ev3: '', student: '', linea_investigacion: '' })
   const [projError, setProjError] = useState('')
   const [projSubmitting, setProjSubmitting] = useState(false)
   const [docentes, setDocentes] = useState([])
@@ -261,7 +262,7 @@ export default function AdminDashboard() {
   })
 
   async function openCreateProj() {
-    setProjForm({ nombre: '', categoria: 'Desarrollo', semestre: 1, anio: 2026, ev1: '', ev2: '', ev3: '', student: '' })
+    setProjForm({ nombre: '', categoria: 'Desarrollo', semestre: 1, anio: 2026, ev1: '', ev2: '', ev3: '', student: '', linea_investigacion: '' })
     setProjError('')
     await loadUsersForProjectModal()
     setShowCreateProj(true)
@@ -275,7 +276,7 @@ export default function AdminDashboard() {
     setProjError('')
     try {
       const { data: projData, error: projErr } = await supabase.from('proyectos')
-        .insert([{ nombre: escapeHTML(projForm.nombre), categoria: projForm.categoria, semestre: projForm.semestre, anio: projForm.anio, estado: 'Pendiente' }])
+        .insert([{ nombre: escapeHTML(projForm.nombre), categoria: projForm.categoria, semestre: projForm.semestre, anio: projForm.anio, estado: 'Pendiente', linea_investigacion: projForm.linea_investigacion || null }])
         .select().single()
       if (projErr) throw projErr
 
@@ -309,7 +310,8 @@ export default function AdminDashboard() {
     setProjForm({
       nombre: p.nombre, categoria: p.categoria, semestre: p.semestre, anio: p.anio,
       ev1: evalIds[0] || '', ev2: evalIds[1] || '', ev3: evalIds[2] || '',
-      student: studData?.estudiante_id || ''
+      student: studData?.estudiante_id || '',
+      linea_investigacion: p.linea_investigacion || ''
     })
     setShowEditProj(true)
   }
@@ -319,7 +321,7 @@ export default function AdminDashboard() {
     setProjSubmitting(true)
     setProjError('')
     try {
-      await supabase.from('proyectos').update({ nombre: escapeHTML(projForm.nombre), categoria: projForm.categoria, semestre: projForm.semestre, anio: projForm.anio }).eq('id', editProjId)
+      await supabase.from('proyectos').update({ nombre: escapeHTML(projForm.nombre), categoria: projForm.categoria, semestre: projForm.semestre, anio: projForm.anio, linea_investigacion: projForm.linea_investigacion || null }).eq('id', editProjId)
 
       await supabase.from('proyecto_evaluadores').delete().eq('proyecto_id', editProjId)
       const evalIds = [projForm.ev1, projForm.ev2, projForm.ev3].filter(v => v)
@@ -373,6 +375,7 @@ export default function AdminDashboard() {
     setActiveTab(tab)
     if (tab === 'users') loadUsers()
     else if (tab === 'projects') loadProjects()
+    // 'informes' loads on demand via Generar Informe button
   }
 
   function handleLogout() { logout(); navigate('/') }
@@ -386,7 +389,8 @@ export default function AdminDashboard() {
 
   const tabs = [
     { id: 'users', label: 'Gestión de Usuarios', icon: 'fa-users-gear' },
-    { id: 'projects', label: 'Gestión de Proyectos', icon: 'fa-diagram-project' }
+    { id: 'projects', label: 'Gestión de Proyectos', icon: 'fa-diagram-project' },
+    { id: 'informes', label: 'Informes de Proyectos', icon: 'fa-chart-bar' }
   ]
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -558,6 +562,9 @@ export default function AdminDashboard() {
             </div>
           </div>
         )}
+
+        {/* ─── INFORMES TAB ─────────────────────────────────────── */}
+        {activeTab === 'informes' && <InformesTab />}
       </main>
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
@@ -601,7 +608,8 @@ export default function AdminDashboard() {
         <ModalShell title={showEditProj ? 'Editar Proyecto' : 'Registrar Nuevo Proyecto'} icon="fa-diagram-project" onClose={() => { setShowCreateProj(false); setShowEditProj(false) }}>
           <form onSubmit={showEditProj ? handleEditProject : handleCreateProject} className="space-y-5">
             <InputField label="Nombre del Proyecto" value={projForm.nombre} onChange={v => setProjForm(f => ({...f, nombre: v}))} required />
-            <SelectField label="Categoría" value={projForm.categoria} onChange={v => setProjForm(f => ({...f, categoria: v}))} options={[{ v:'Desarrollo', l:'Desarrollo' },{ v:'Propuesta', l:'Propuesta' },{ v:'Aplicación', l:'Aplicación' }]} />
+            <SelectField label="Categoría / Fase" value={projForm.categoria} onChange={v => setProjForm(f => ({...f, categoria: v}))} options={[{ v:'Desarrollo', l:'Desarrollo' },{ v:'Propuesta', l:'Propuesta' },{ v:'Aplicación', l:'Aplicación' }]} />
+            <InputField label="Línea de Investigación" value={projForm.linea_investigacion} onChange={v => setProjForm(f => ({...f, linea_investigacion: v}))} hint="Ej: Ciencias básicas, Ingeniería aplicada..." />
             <div className="grid grid-cols-2 gap-4">
               <SelectField label="Semestre" value={projForm.semestre} onChange={v => setProjForm(f => ({...f, semestre: parseInt(v)}))} options={[{ v:1, l:'1° Semestre' },{ v:2, l:'2° Semestre' }]} />
               <InputField label="Año" type="number" value={projForm.anio} onChange={v => setProjForm(f => ({...f, anio: parseInt(v)}))} required />
